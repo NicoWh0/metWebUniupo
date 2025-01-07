@@ -1,0 +1,28 @@
+{
+  "name": "progetto_met_web",
+  "version": "1.0.0",
+  "description": "Progetto Metodologie Web",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "Nicolò Bianchetto",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "better-sqlite3": "^9.0.0",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
+    "express-session": "^1.17.3",
+    "express-validator": "^7.0.1",
+    "fs": "^0.0.1-security",
+    "moment": "^2.29.4",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "path": "^0.12.7"
+  }
+}
