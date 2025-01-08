@@ -1,0 +1,146 @@
+#user-header {
+	background-image: linear-gradient(to bottom, #ffffff00, #000000a2), url(../img/image_chart/just_a_background.jpg);
+	background-position: bottom, center;
+	background-size: cover;
+	height: 40rem;
+	border-bottom: #000000 .1rem solid;
+}
+
+#user-info {
+	min-width: min-content;
+	width: 16%;
+	height: auto;
+	margin-bottom: 1.2rem;
+	background-image: linear-gradient(to bottom, #ffffff46, #ffffffa1);
+	background-color: transparent;
+	border-radius: 1.25rem;
+	text-align: center;
+}
+
+#user-info #user-info-img {
+	width: 8rem;
+	height: auto;
+	fill: #ffffff;
+	padding-top: .2rem;
+}
+
+#user-info .card-body {
+	font-family: Arial, Helvetica, sans-serif;
+	text-shadow: 2.3px 2.3px 3.2px #2e2e2e;
+	color: #ffffff;
+}
+
+#user-info #user-name {
+	font-weight: bolder;
+	font-size: 1.8em;
+	border: none;
+	background-color: inherit;
+}
+
+#user-info #user-description {
+	font-size: 1.1em;
+	padding-top: .6rem;
+}
+
+#user-info #user-mail {
+	border: none;
+	font-weight: lighter;
+	font-style: italic;
+	background-color: inherit;
+}
+
+#user-info #user-name::selection, #user-info #user-description::selection, #user-info #user-mail::selection {
+	background-color: #0f0fd4;
+	color: #ffffff;
+	text-shadow: none;
+}
+
+#user-posted-images {
+	user-select: none;
+	background-color: #161616;
+	min-height: 30rem !important;
+	height: min-content;
+}
+
+#user-art-gallery {
+	padding-top: .5rem;
+}
+
+#user-art-gallery .user-art-anchor {
+	width: 20%;
+	aspect-ratio: 1 / 1;
+}
+
+#user-art-gallery .user-art-wrapper {
+	height: 100%;
+	width: 100%;
+	border: 1px #363636 solid;
+	position: relative;
+}
+
+#user-art-gallery .user-art-wrapper .user-art {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+#user-art-gallery .user-art-wrapper .user-art-overlay-desc {
+	z-index: 1;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 100%;
+	width: 100%;
+	visibility: hidden;
+	background-color: #00000071;
+}
+
+#user-art-gallery .user-art-wrapper:hover .user-art-overlay-desc {
+	animation: fadeIn .2s linear;
+	visibility: visible;
+}
+
+#user-art-gallery .user-art-wrapper:hover .user-art-desc {
+	animation: fadeInUp .2s linear;
+}
+
+.user-art-overlay-desc > .user-art-desc {
+	font-weight: bolder;
+	font-size: 1.4em;
+	line-height: 1.1em;
+	font-style: italic;
+	font-family: 'Luminari', sans-serif;
+	text-shadow: #000000 2px 2px 2px;
+	margin-bottom: .7rem;
+	margin-right: .5rem;
+	margin-left: .5rem;
+	color: #ffffff;
+}
+
+/* User Personal Gallery Media Queries */
+
+@media only screen and (max-width: 1195px) {
+	#user-art-gallery .user-art-anchor {
+		width: 25%;
+	}
+}
+
+@media only screen and (max-width: 856px) {
+	#user-art-gallery .user-art-anchor {
+		width: 33.33333%;
+	}
+}
+
+@media only screen and (max-width: 630px) {
+	#user-art-gallery .user-art-anchor {
+		width: 50%;
+	}
+}
+
+@media only screen and (max-width: 400px) {
+	#user-art-gallery .user-art-anchor {
+		width: 100%;
+	}
+}

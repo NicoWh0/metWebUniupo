@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="it-IT">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+        <title>GroundArt</title>
+        <link rel="icon" href="favicon.png">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri&display=swap" rel="stylesheet">
+        <link href="https://fonts.cdnfonts.com/css/luminari" rel="stylesheet">
+        <link rel="stylesheet" href="css/styles.css">        
+    </head>
+    <body>
+        <header id="navbar" class="nav navbar-dark bg-dark justify-content-between d-flex align-items-center border-bottom">
+            <button id="offcanvas-button" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop" aria-controls="offcanvasTop">≡</button>
+            <div class="offcanvas offcanvas-top bg-dark" tabindex="-1" id="offcanvasTop" aria-labelledby="offcanvasTopLabel">
+                <div class="offcanvas-header">
+                    <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <div class="container-sm d-flex flex-sm-column">
+                        <div class="row d-flex flex-column g-2">
+                            <div class="col-sm-12 d-flex justify-content-center">
+                                <form id="search-box" class="d-flex" role="search">
+                                    <svg id="search-lens" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                    </svg>
+                                    <input id="search-bar" class="form-control me-2" type="search" placeholder="Cerca Opere o Artisti" aria-label="Search">
+                                </form>
+                            </div>
+                            <div class="col-sm-12">
+                                <a id="offcanvas-user-anchor" href="user.html">
+                                    <div id="offcanvas-user-wrapper">
+                                        <svg id="offcanvas-user-image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                                            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                                            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                                        </svg>
+                                        <span id="offcanvas-username">NicoWho</span>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-sm-12">
+                                <li class="list-group offcanvas-small-menu">
+                                    <ul class="list-group-item offcanvas-small-menu-item">
+                                        <a class="small-menu-item-anchor" href="#">Modifica Profilo</a>
+                                    </ul>
+                                    <ul class="list-group-item offcanvas-small-menu-item">
+                                        <a class="small-menu-item-anchor" href="#">Logout</a>
+                                    </ul>
+                                </li>
+                            </div>     
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a id="logo-title" class="navbar-brand" href="index.html">
+                <svg id="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                    <path d="M59.83496,15.93018c.58534-.84171-.47382-1.97421-1.3526-1.4057-5.57391,3.37177-9.40014,8.55298-11.87414,13.02704,1.27216-3.72504,2.64307-6.33099,2.66473-6.37183,.47233-.82822-.51683-1.83225-1.3521-1.35298-6.1728,3.27894-10.56227,12.06404-12.79036,17.50941-.60535-1.19093-.45393-1.42772-1.22173-1.7522-1.53018-.14769-2.0655,1.78005-2.82287,4.30243-.39265-1.2627-.84084-2.22669-1.18196-2.84809,.63995-6.79315,5.57477-16.4527,5.62537-16.55096,.45334-.81196-.49843-1.79306-1.32474-1.35787-3.57662,1.72963-8.26016,8.06795-10.62942,11.52358-.78455-4.85364-1.70538-8.47906-1.71625-8.52118-.17421-.80062-1.32199-1.0199-1.77832-.33882-.77393,1.06771-1.44611,3.39693-2.04187,7.03823C13.41101,20.49426,5.94891,14.84021,5.59863,14.57861c-.91282-.69839-2.13897,.55722-1.35931,1.45073,5.8778,6.88472,7.24242,24.14052,7.53185,29.61079h-2.25116c-.55225,0-1,.44775-1,1,0,.55225,.44775,1,1,1H54.25977c.55225,0,1-.44775,1-1s-.44775-1-1-1h-1.93671c-.43323-17.41272,7.43085-29.58673,7.5119-29.70996Zm-16.99951,19.08887c1.08519,3.5025,1.69001,7.32883,1.64672,10.62109,0,0-4.04998,0-4.04998,0,.33392-5.56683,1.01117-10.00397,1.85541-12.2832,.16943,.47656,.35693,1.03516,.54785,1.66211Zm3.05078-11.25244c-.77838,1.88916-1.6839,4.40973-2.37061,7.21722-.07434-.17542-.11926-.27435-.12598-.289-.25332-.59806-1.08977-.77639-1.56788-.33787-2.16058,1.88859-3.04144,9.15104-3.39764,15.28318h-1.26837c-.11157-1.78064-.44067-3.60461-.99628-5.44434,1.19739-3.22498,4.68457-11.72443,9.72675-16.4292Zm-12.3623,14.90918c.86304,2.1182,1.49575,4.75242,1.62944,6.96436,.00002,0-3.13225,0-3.13225,0,.46991-3.19305,1.02655-5.59296,1.50281-6.96436Zm-5.15186-.25928c.66809,1.34912,1.58344,3.85919,1.50488,7.22363h-2.8681c.2373-3.2088,.72461-5.77136,1.36322-7.22363Zm3.61816-15.08984c-1.41595,3.24225-3.26373,8.05359-3.91565,12.31335-2.20482,1.4407-2.72344,6.05483-3.0733,10.00006,.00012,.00006-.41407,.00006-.41407,.00006,.21735-3.38159,.02368-7.41895-.57977-12.03088,1.90613-2.95972,5.09448-7.42218,7.98279-10.28259Zm-11.33643,2.5332c1.20401,5.3242,2.40574,14.78002,1.92774,19.78028,.00011-.00001-4.20301-.00001-4.20301-.00001,.20722-3.97644,1.06141-15.0129,2.27527-19.78027Zm-11.63477-5.5376c2.84448,2.87714,6.34436,7.07074,8.52271,11.9729-.62585,5.00464-.99829,10.47681-1.16669,13.34497h-2.60138c-.22894-4.39667-1.17188-16.74536-4.75464-25.31787Zm37.46442,25.31787c.0329-3.12817-.42004-6.43793-1.35168-9.85968,.81995-2.4165,4.09735-11.04724,10.84479-16.94354-2.42822,5.0719-5.94647,14.62427-5.6488,26.80322h-3.8443Z"/>
+                  </svg>
+                <div id="title-box">
+                    <h1 id="title">GroundArt</h1>
+                </div>   
+            </a>
+            <form id="search-box" class="d-flex" role="search">
+                <svg id="search-lens" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+                <input id="search-bar" class="form-control me-2" type="search" placeholder="Cerca per Titolo, Artista, Genere o Tag" aria-label="Search">
+            </form>
+            <div id="user-and-submit">
+                <a id="user-logged" data-bs-toggle="dropdown" href="#">
+                    <svg id="user-image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                    </svg>
+                </a>
+                <div id="user-dropdown-menu" class="dropdown-menu">
+                    <h5 class="dropdown-header">NicoWho</h5>
+                    <a class="dropdown-item" href="user.html">Visualizza Profilo</a>
+                    <a class="dropdown-item" href="#">Modifica Profilo</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="#">Logout</a>
+                </div>
+                <button type="button" id="submit-button" class="btn btn-primary shadow-none" data-bs-toggle="modal" data-bs-target="#uploadImage">Pubblica</button>  
+            </div>
+        </header> 
+        <div class="modal fade" id="uploadImage" tabindex="-1" aria-labelledby="uploadImageLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content standard-background">
+                    <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="uploadImageLabel">Pubblica immagine</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">Titolo*:</label>
+                                <input type="text" class="form-control" id="recipient-name">
+                            </div>
+                            <div class="form-group">
+                                <label for="message-text" class="col-form-label">Descrizione:</label>
+                                <textarea class="form-control" id="message-text"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-primary">Pubblica</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="editImage" tabindex="-1" aria-labelledby="editImageLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content standard-background">
+                    <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="editImageLabel">Modifica immagine pubblicata</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="recipient-name" class="col-form-label">Titolo*:</label>
+                                <input type="text" class="form-control" id="recipient-name">
+                            </div>
+                            <div class="form-group">
+                                <label for="message-text" class="col-form-label">Descrizione:</label>
+                                <textarea class="form-control" id="message-text"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-primary">Conferma modifiche</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="editComment" tabindex="-1" aria-labelledby="editCommentLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content standard-background">
+                    <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="editCommentLabel">Modifica commento (max 300 caratteri)</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="message-text" class="col-form-label">Testo Commento:</label>
+                                <textarea class="form-control" id="message-text">Grazie a tutti!</textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-primary">Conferma modifiche</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section id="offcanvas-end" class="offcanvas offcanvas-end bg-dark" tabindex="-1" aria-labelledby="offcanvasEndLabel">
+            <div class="offcanvas-header">
+                <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="d-flex flex-column h-50 align-content-center justify-content-start">
+                    <div id="related-title-wrapper" class="d-flex flex-row align-items-end">
+                        <h2 id="related-title">Potrebbero piacerti anche...</h2>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row row-cols-3 d-flex flex-row gx-1 gy-4 justify-content-around">
+                            <div class="col d-flex justify-content-center">    
+                                <a href="#" title="Fantasy Forest">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/small_forest.jpg" alt="Fantasy Forest">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Sky Mountain">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/man_on_oblivion.jpg" alt="Sky Mountain">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="fiume che scorre">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/quiet_river.jpg" alt="fiume che scorre">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Radura con funghi">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/radura.jpg" alt="Radura con funghi">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Valley and Mountains">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/robin-lhebrard-valley5.jpeg" alt="Valley and Mountains">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Just Some Flowers">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/robin-lhebrard-flowers.jpg" alt="Just Some Flowers">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="&quot;Ciclo&quot;">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/bee_flower.jpg" alt="&quot;Ciclo&quot;">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Chilling">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/chilling_at_the_lake.jpg" alt="Chilling">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Speed Forest Painting">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/another_green_forest.jpg" alt="Speed Forest Painting">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-column h-50 align-content-center justify-content-center">
+                    <div id="related-more-by-wrapper" class="d-flex flex-row align-items-end">
+                        <h3 id="more-by-title">Altro da NicoWho</h3>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row row-cols-3 d-flex flex-row gx-1 gy-4 justify-content-around">
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Cascata bianca">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/white_peak_waterfall.jpg" alt="Cascata bianca">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Può capitare">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/oh_nouh.jpg" alt="Può capitare">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Pilastro">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/pillar.jpg" alt="Pilastro">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Da solo in un nuovo posto">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/lonely_in_a_new__place.jpg" alt="Da solo in un nuovo posto">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Nebbia al tramonto">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/mist_at_sunset.jpg" alt="Nebbia al tramonto">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <main id="user-post-content" class="container-fluid d-flex flex-row">
+            <div id="img-content-column" class="container-lg d-flex flex-column">
+                <div id="offcanvas-related-button-row" class="d-flex flex-row justify-content-end align-content-center">
+                    <button id="offcanvas-related-button" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas-end" aria-controls="offcanvasEnd">Correlati</button>
+                </div>
+                <div id="full-image-container-upper" class="d-flex flex-column align-items-center">
+                    <figure id="full-image-container" class="row-cols-xl-1 figure d-flex flex-column align-items-center">
+                        <div id="full-image-wrapper" class="col-xl-1 figure-img">
+                            <img id="full-image" class="" src="img/image_chart/walking_woods.jpg">
+                        </div>
+                        <figcaption id="post-description" class="figure-caption">
+                            <div id="title-and-buttons" class="d-flex flex-row justify-content-between">
+                                <h1 id="title-art">Passeggiata nel Bosco</h1>
+                                <div id="img-interact-container" class="d-flex flex-row justify-content-around align-items-center">
+                                    <span class="interact-inline">
+                                        <svg class="img-interact" xmlns="http://www.w3.org/2000/svg" id="edit-shape" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#editImage">
+                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                                        </svg>
+                                    </span>
+                                    <span class="interact-inline">
+                                        <svg class="img-interact" id="download-shape" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"> 
+                                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/> 
+                                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/> 
+                                        </svg>
+                                    </span>
+                                    <span id="like-inline" class="interact-inline">
+                                        <svg class="img-interact" id="like-shape" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M0.256 12.16q0.544 2.080 2.080 3.616l13.664 14.144 13.664-14.144q1.536-1.536 2.080-3.616t0-4.128-2.080-3.584-3.584-2.080-4.16 0-3.584 2.080l-2.336 2.816-2.336-2.816q-1.536-1.536-3.584-2.080t-4.128 0-3.616 2.080-2.080 3.584 0 4.128z"/>
+                                        </svg>
+                                        <span id="like-counter">42</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div id="author-row" class="d-flex flex-row justify-content-between">
+                                <span id="author-intro">di:</span>
+                                <span id="author">NicoWho</span>
+                            </div>  
+                        </figcaption>
+                    </figure>
+                </div>
+                <div id="description-and-tags" class="row d-flex flex-column">
+                    <div id="img-description-wrapper" class="col-8">
+                        <span id="img-description">Mi mancano le camminate che da piccolo facevo nel bosco...</span>
+                    </div>
+                    <li id="tag-list-group" class="list-group list-group-horizontal d-flex flex-wrap justify-content-center">
+                        <ul class="list-group-item tag-item">#natura</ul>
+                        <ul class="list-group-item tag-item">#bosco</ul>
+                        <ul class="list-group-item tag-item">#nature</ul>
+                        <ul class="list-group-item tag-item">#ricordi</ul>
+                        <ul class="list-group-item tag-item">#childmemory</ul>
+                        <ul class="list-group-item tag-item">#painting</ul>
+                        <ul class="list-group-item tag-item">#green</ul>
+                        <ul class="list-group-item tag-item">#alberi</ul>
+                        <ul class="list-group-item tag-item">#camminata</ul>
+                        <ul class="list-group-item tag-item">#wholesome</ul>
+                        <ul class="list-group-item tag-item">#woods</ul>
+                        <ul class="list-group-item tag-item">#sfondo</ul>
+                        <ul class="list-group-item tag-item">#background</ul>
+                        <ul class="list-group-item tag-item">#illustrazione</ul>
+                    </li>
+                </div>
+                <div id="comments-section" class="row d-flex flex-column justify-content-around">
+                    <h1 id="comments-title">Commenti</h1>
+                    <div class="d-flex flex-column">
+                        <div id="comment-form-group" class="input-group d-flex flex-row">
+                            <div class="comment-user-image-wrapper d-flex align-items-start justify-content-start">
+                                <svg class="comment-user-image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                                </svg>
+                            </div>
+                            <textarea id="comment-form" class="form-control" aria-describedby="commentBlock" placeholder="Inserisci un commento (max 300 caratteri)" maxlength="300"></textarea>
+                        </div>
+                        <div id="comments-column" class="d-flex flex-column">
+                            <div class="comment-wrapper d-flex flex-row">
+                                <div class="comment-user-image-wrapper d-flex align-items-start">
+                                    <svg class="comment-user-image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                                    </svg>
+                                </div>
+                                <div class="card-container d-flex flex-column">
+                                    <div class="card">
+                                        <div class="card-body bg-dark d-flex flex-column justify-content-between">
+                                          <span class="card-title">NicoWho</span>
+                                          <p class="card-text">Grazie a tutti!</p>
+                                        </div>
+                                    </div>
+                                    <div class="comment-buttons-wrapper d-flex flex-row">
+                                        <svg class="comment-button comment-edit-button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#editComment">
+                                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                                        </svg>
+                                        <div class="d-flex flex-row justify-content-between align-items-center">
+                                            <svg class="comment-button comment-like-button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"> 
+                                                <path d="M0.256 12.16q0.544 2.080 2.080 3.616l13.664 14.144 13.664-14.144q1.536-1.536 2.080-3.616t0-4.128-2.080-3.584-3.584-2.080-4.16 0-3.584 2.080l-2.336 2.816-2.336-2.816q-1.536-1.536-3.584-2.080t-4.128 0-3.616 2.080-2.080 3.584 0 4.128z"/>
+                                            </svg>
+                                            <span class="comment-like-counter">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="comment-wrapper d-flex flex-row">
+                                <div class="comment-user-image-wrapper d-flex align-items-start">
+                                    <svg class="comment-user-image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                                    </svg>
+                                </div>
+                                <div class="card-container d-flex flex-column">
+                                    <div class="card">
+                                        <div class="card-body bg-dark d-flex flex-column justify-content-between">
+                                          <span class="card-title">crow32</span>
+                                          <p class="card-text">Molto bello! :&#41</p>
+                                        </div>
+                                    </div>
+                                    <div class="comment-buttons-wrapper d-flex flex-row">
+                                        <div class="d-flex flex-row justify-content-between align-items-center">
+                                            <svg class="comment-button comment-like-button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"> 
+                                                <path d="M0.256 12.16q0.544 2.080 2.080 3.616l13.664 14.144 13.664-14.144q1.536-1.536 2.080-3.616t0-4.128-2.080-3.584-3.584-2.080-4.16 0-3.584 2.080l-2.336 2.816-2.336-2.816q-1.536-1.536-3.584-2.080t-4.128 0-3.616 2.080-2.080 3.584 0 4.128z"/>
+                                            </svg>
+                                            <span class="comment-like-counter">1</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="comment-wrapper d-flex flex-row">
+                                <div class="comment-user-image-wrapper d-flex align-items-start">
+                                    <svg class="comment-user-image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                                    </svg>
+                                </div>
+                                <div class="card-container d-flex flex-column">
+                                    <div class="card">
+                                        <div class="card-body bg-dark d-flex flex-column justify-content-between">
+                                          <span class="card-title">Sara98</span>
+                                          <p class="card-text">Mi piace molto il tuo stile!</p>
+                                        </div>
+                                    </div>
+                                    <div class="comment-buttons-wrapper d-flex flex-row">
+                                        <div class="d-flex flex-row justify-content-between align-items-center">
+                                            <svg class="comment-button comment-like-button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"> 
+                                                <path d="M0.256 12.16q0.544 2.080 2.080 3.616l13.664 14.144 13.664-14.144q1.536-1.536 2.080-3.616t0-4.128-2.080-3.584-3.584-2.080-4.16 0-3.584 2.080l-2.336 2.816-2.336-2.816q-1.536-1.536-3.584-2.080t-4.128 0-3.616 2.080-2.080 3.584 0 4.128z"/>
+                                            </svg>
+                                            <span class="comment-like-counter">2</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="comment-wrapper d-flex flex-row">
+                                <div class="comment-user-image-wrapper d-flex align-items-start">
+                                    <svg class="comment-user-image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                                    </svg>
+                                </div>
+                                <div class="card-container d-flex flex-column">
+                                    <div class="card">
+                                        <div class="card-body bg-dark d-flex flex-column justify-content-between">
+                                          <span class="card-title">Celeste_</span>
+                                          <p class="card-text">Beautiful!</p>
+                                        </div>
+                                    </div>
+                                    <div class="comment-buttons-wrapper d-flex flex-row">
+                                        <div class="d-flex flex-row justify-content-between align-items-center">
+                                            <svg class="comment-button comment-like-button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"> 
+                                                <path d="M0.256 12.16q0.544 2.080 2.080 3.616l13.664 14.144 13.664-14.144q1.536-1.536 2.080-3.616t0-4.128-2.080-3.584-3.584-2.080-4.16 0-3.584 2.080l-2.336 2.816-2.336-2.816q-1.536-1.536-3.584-2.080t-4.128 0-3.616 2.080-2.080 3.584 0 4.128z"/>
+                                            </svg>
+                                            <span class="comment-like-counter">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="comment-wrapper d-flex flex-row">
+                                <div class="comment-user-image-wrapper d-flex align-items-start">
+                                    <svg class="comment-user-image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                                    </svg>
+                                </div>
+                                <div class="card-container d-flex flex-column">
+                                    <div class="card">
+                                        <div class="card-body bg-dark d-flex flex-column justify-content-between">
+                                          <span class="card-title">Robin42</span>
+                                          <p class="card-text">Anch'io andavo a fare delle camminate nei boschi da piccolo. Comunque davvero un ottimo lavoro. Complimenti!</p>
+                                        </div>
+                                    </div>
+                                    <div class="comment-buttons-wrapper d-flex flex-row">
+                                        <div class="d-flex flex-row justify-content-between align-items-center">
+                                            <svg class="comment-button comment-like-button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"> 
+                                                <path d="M0.256 12.16q0.544 2.080 2.080 3.616l13.664 14.144 13.664-14.144q1.536-1.536 2.080-3.616t0-4.128-2.080-3.584-3.584-2.080-4.16 0-3.584 2.080l-2.336 2.816-2.336-2.816q-1.536-1.536-3.584-2.080t-4.128 0-3.616 2.080-2.080 3.584 0 4.128z"/>
+                                            </svg>
+                                            <span class="comment-like-counter">3</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="related" class="container-sm d-flex flex-column align-content-center">
+                <div class="d-flex flex-column h-50 align-content-center justify-content-start">
+                    <div id="related-title-wrapper" class="d-flex flex-row align-items-end">
+                        <h2 id="related-title">Potrebbero piacerti anche...</h2>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row row-cols-3 d-flex flex-row gx-1 gy-4 justify-content-around">
+                            <div class="col d-flex justify-content-center">    
+                                <a href="#" title="Fantasy Forest">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/small_forest.jpg" alt="Fantasy Forest">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Sky Mountain">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/man_on_oblivion.jpg" alt="Sky Mountain">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="fiume che scorre">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/quiet_river.jpg" alt="fiume che scorre">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Radura con funghi">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/radura.jpg" alt="Radura con funghi">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Valley and Mountains">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/robin-lhebrard-valley5.jpeg" alt="Valley and Mountains">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Just Some Flowers">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/robin-lhebrard-flowers.jpg" alt="Just Some Flowers">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="&quot;Ciclo&quot;">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/bee_flower.jpg" alt="&quot;Ciclo&quot;">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Chilling">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/chilling_at_the_lake.jpg" alt="Chilling">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Speed Forest Painting">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/another_green_forest.jpg" alt="Speed Forest Painting">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex flex-column h-50 align-content-center justify-content-start">
+                    <div id="related-more-by-wrapper" class="d-flex flex-row align-items-end">
+                        <h3 id="more-by-title">Altro da NicoWho</h3>
+                    </div>
+                    <div class="container-fluid">
+                        <div class="row row-cols-3 d-flex flex-row gx-1 gy-4 justify-content-around">
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Cascata bianca">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/white_peak_waterfall.jpg" alt="Cascata bianca">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Può capitare">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/oh_nouh.jpg" alt="Può capitare">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Pilastro">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/pillar.jpg" alt="Pilastro">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Da solo in un nuovo posto">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/lonely_in_a_new__place.jpg" alt="Da solo in un nuovo posto">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                            <div class="col d-flex justify-content-center">
+                                <a href="#" title="Nebbia al tramonto">
+                                    <div class="related-img-container">                                       
+                                        <img class="related-img" src="img/image_chart/mist_at_sunset.jpg" alt="Nebbia al tramonto">
+                                        <div class="related-img-dark-transparent-layer"></div>
+                                    </div> 
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer id="footer" class="container-fluid">
+            <div class="row row-cols-3 d-flex justify-content-around">
+                <div class="col-sm-2 d-flex flex-column">
+                    <li id="footer-little-menu">
+                        <ul class="footer-little-menu-item"><a href="index.html">Home</a></ul>
+                        <ul class="footer-little-menu-item"><a href="#">Torna all'inizio</a></ul>
+                        <ul class="footer-little-menu-item"><a href="#">Etiquette</a></ul>
+                    </li>
+                </div>
+                <div class="col-sm-2 d-flex flex-column-reverse">
+                    <div class="d-flex flex-row justify-content-around">
+                        <svg class="footer-social" id="twitter" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 310">
+                            <path d="M302.973,57.388c-4.87,2.16-9.877,3.983-14.993,5.463c6.057-6.85,10.675-14.91,13.494-23.73
+                            c0.632-1.977-0.023-4.141-1.648-5.434c-1.623-1.294-3.878-1.449-5.665-0.39c-10.865,6.444-22.587,11.075-34.878,13.783
+                            c-12.381-12.098-29.197-18.983-46.581-18.983c-36.695,0-66.549,29.853-66.549,66.547c0,2.89,0.183,5.764,0.545,8.598
+                            C101.163,99.244,58.83,76.863,29.76,41.204c-1.036-1.271-2.632-1.956-4.266-1.825c-1.635,0.128-3.104,1.05-3.93,2.467
+                            c-5.896,10.117-9.013,21.688-9.013,33.461c0,16.035,5.725,31.249,15.838,43.137c-3.075-1.065-6.059-2.396-8.907-3.977
+                            c-1.529-0.851-3.395-0.838-4.914,0.033c-1.52,0.871-2.473,2.473-2.513,4.224c-0.007,0.295-0.007,0.59-0.007,0.889
+                            c0,23.935,12.882,45.484,32.577,57.229c-1.692-0.169-3.383-0.414-5.063-0.735c-1.732-0.331-3.513,0.276-4.681,1.597
+                            c-1.17,1.32-1.557,3.16-1.018,4.84c7.29,22.76,26.059,39.501,48.749,44.605c-18.819,11.787-40.34,17.961-62.932,17.961
+                            c-4.714,0-9.455-0.277-14.095-0.826c-2.305-0.274-4.509,1.087-5.294,3.279c-0.785,2.193,0.047,4.638,2.008,5.895
+                            c29.023,18.609,62.582,28.445,97.047,28.445c67.754,0,110.139-31.95,133.764-58.753c29.46-33.421,46.356-77.658,46.356-121.367
+                            c0-1.826-0.028-3.67-0.084-5.508c11.623-8.757,21.63-19.355,29.773-31.536c1.237-1.85,1.103-4.295-0.33-5.998
+                            C307.394,57.037,305.009,56.486,302.973,57.388z"/>
+                        </svg>
+                        <svg class="footer-social" id="facebook" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"> 
+                            <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z" fill="#ffffff"/>
+                        </svg>
+                        <svg class="footer-social" id="instagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"> 
+                            <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.478 2.478 0 0 1-.92-.598 2.48 2.48 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233 0-2.136.008-2.388.046-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z" fill="white"/>
+                        </svg>
+                        <svg class="footer-social" id="reddit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"> 
+                            <path d="M6.167 8a.831.831 0 0 0-.83.83c0 .459.372.84.83.831a.831.831 0 0 0 0-1.661zm1.843 3.647c.315 0 1.403-.038 1.976-.611a.232.232 0 0 0 0-.306.213.213 0 0 0-.306 0c-.353.363-1.126.487-1.67.487-.545 0-1.308-.124-1.671-.487a.213.213 0 0 0-.306 0 .213.213 0 0 0 0 .306c.564.563 1.652.61 1.977.61zm.992-2.807c0 .458.373.83.831.83.458 0 .83-.381.83-.83a.831.831 0 0 0-1.66 0z" fill="white"/>
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.828-1.165c-.315 0-.602.124-.812.325-.801-.573-1.9-.945-3.121-.993l.534-2.501 1.738.372a.83.83 0 1 0 .83-.869.83.83 0 0 0-.744.468l-1.938-.41a.203.203 0 0 0-.153.028.186.186 0 0 0-.086.134l-.592 2.788c-1.24.038-2.358.41-3.17.992-.21-.2-.496-.324-.81-.324a1.163 1.163 0 0 0-.478 2.224c-.02.115-.029.23-.029.353 0 1.795 2.091 3.256 4.669 3.256 2.577 0 4.668-1.451 4.668-3.256 0-.114-.01-.238-.029-.353.401-.181.688-.592.688-1.069 0-.65-.525-1.165-1.165-1.165z" fill="white"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="col-sm-2 d-flex flex-column-reverse">
+                    <p>© 2023 GroundArt Team</p>
+                </div>
+            </div>
+        </footer>
+        <script src="https://code.jquery.com/jquery-3.6.4.slim.min.js" integrity="sha256-a2yjHM4jnF9f54xUQakjZGaqYs/V1CYvWpoqZzC2/Bw=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+    </body>
+</html>

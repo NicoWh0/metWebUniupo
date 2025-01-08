@@ -1,0 +1,193 @@
+#search-header {
+	min-height: 5rem;
+	height: min-content;
+	padding-top: .6rem;
+	padding-bottom: .6rem;
+}
+
+#search-header #search-info-box {
+	margin-left: .8rem;
+	width: min-content;
+	white-space: nowrap;
+}
+
+#search-header #search-info-box #search-info-title {
+	font-family: 'Luminari', sans-serif;
+}
+
+#search-header #search-info-box #search-info-counter {
+	font-size: 0.95em;
+	padding-top: .2rem;
+}
+
+#search-header #search-buttons {
+	width: max-content;
+}
+
+#search-header #search-buttons .search-filter-button {
+	margin-left: .8rem;
+	width: min-content;
+	background-color: #eb9d0c;
+	border-color: #1a1a1a;
+	font-weight: bold;
+}
+
+#search-header #search-buttons .search-filter-button:hover {
+    background-color: #e6a732; 
+}
+
+#search-header #search-buttons .search-filter-button:active {
+    background-color: #b87e13; 
+    border-color: #805300;
+    color: #cfcfcf;
+}
+
+#search-header #search-buttons .search-option {
+	cursor: pointer;
+	user-select: none;
+}
+
+#search-header #search-buttons .search-option:hover {
+	background-color: #303030;
+	color: #f3f3f3;
+}
+
+#search-result-gallery-container { 
+	background-color: #202020;
+	min-height: 60rem !important;
+	user-select: none;
+}
+
+#search-result-gallery {
+	padding-top: .5rem;
+}
+
+#search-result-gallery .search-result-anchor {
+	width: 16.6666667%;
+	aspect-ratio: 1 / 1;
+}
+
+#search-result-gallery .search-result-wrapper {
+	height: 100%;
+	width: 100%;
+	border: 1.3px #363636 solid;
+	position: relative;
+}
+
+#search-result-gallery .search-result-wrapper .search-result-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+#search-result-gallery .search-result-wrapper .search-result-overlay-desc {
+	font-family: Arial, Helvetica, sans-serif;
+	z-index: 1;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 100%;
+	width: 100%;
+	visibility: hidden;
+	background-color: transparent;
+	background-image: linear-gradient(to bottom, #00000027, #000000b9);
+}
+
+#search-result-gallery .search-result-wrapper:hover .search-result-overlay-desc {
+	animation: fadeIn .3s linear;
+	visibility: visible;
+}
+
+#search-result-gallery .search-result-wrapper:hover .search-result-desc {
+	animation: fadeInUp .3s linear;
+}
+
+.search-result-overlay-desc > .search-result-desc {
+	font-weight: bold;
+	line-height: 1.2em;
+	text-shadow: #000000 2px 2px 2px;
+	margin-right: .5rem;
+	margin-left: .5rem;
+	margin-bottom: .8rem;
+	color: #ffffff;
+	height: min-content;
+}
+
+.search-result-overlay-desc > .search-result-desc .search-result-title {
+	font-size: 1.4em;
+}
+
+.search-result-overlay-desc > .search-result-desc .search-result-author-row {
+	font-size: 1.1em;
+	font-style: italic;
+	margin-top: .3rem;
+}
+
+.search-result-desc .search-result-author-row > .search-result-author-img {
+	width: 20px;
+	height: auto;
+	fill: #ffffff;
+}
+
+.search-result-desc .search-result-author-row > .search-result-author-username {
+	padding-top: .1rem;
+	padding-left: .3rem;
+}
+
+/* Search page media query */
+
+@media only screen and (max-width: 1384px) {
+	#search-result-gallery .search-result-anchor {
+		width: 20%;
+	}
+}
+
+@media only screen and (max-width: 1120px) {
+	#search-result-gallery .search-result-anchor {
+		width: 25%;
+	}
+}
+
+@media only screen and (max-width: 920px) {
+	#search-result-gallery .search-result-anchor {
+		width: 33.3333333%;
+	}
+}
+
+@media only screen and (max-width: 612px) {
+	#search-result-gallery .search-result-anchor {
+		width: 50%;
+	}
+}
+
+@media only screen and (max-width: 405px) {
+	#search-result-gallery .search-result-anchor {
+		width: 100%;
+	}
+}
+
+@media only screen and (max-width: 618px) {
+	#search-header #search-info-box #search-info-counter {
+		font-size: 0.85em;
+	}
+}
+
+@media only screen and (max-width: 365px) {
+	#search-header #search-info-box #search-info-title {
+		font-size: 1.2em;
+	}
+	#search-header #search-buttons .search-filter-button {
+		font-size: .9em;
+	}
+	#search-header #search-info-box #search-info-counter {
+		font-size: 0.8em;
+	}
+}
+
+@media only screen and (max-width: 495px) and (min-width: 405px) {
+	.search-result-overlay-desc > .search-result-desc .search-result-title {
+		font-size: 1em;
+	}
+}

@@ -1,0 +1,34 @@
+@keyframes fadeIn {
+	0% { opacity: 0; }
+	100% { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+	from {
+		transform: translate3d(0, 20px, 0);
+		opacity: 0;
+	}
+	to {
+		transform: translate3d(0, 0, 0);
+		opacity: 1;
+	}
+}
+@keyframes likeHover {
+	0% { fill: #ffffff; }
+	100% { fill: #c72121; }
+}
+
+@keyframes likeHoverComment {
+	0% { fill: #cccccc; }
+	100% { fill: #c72121; }
+}
+
+@keyframes editHoverComment {
+	0% { fill: #cccccc; }
+	100% { fill: #eb9d0c; }
+}
+
+@keyframes standardHover {
+	0% { fill: #ffffff; }
+	100% { fill: #eb9d0c; }
+}
