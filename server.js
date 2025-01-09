@@ -112,13 +112,20 @@ imageDao.getAllCategories().then(result => categories = result).catch(err => {th
 
 //REST API
 
-app.get('/home', (_req, res) => {
-    console.log(categories);
-    res.status(200).end();
+app.get('/favicon.ico', (_req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'favicon.png'));
+});
+
+app.get('/favicon.png', (_req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'favicon.png'));
 });
 
 app.get('/etiquette', (_req, res) => {
     res.status(200).json({etiquette: 'Comportati bene!'});
+});
+
+app.get('/categories', (_req, res) => {
+    return res.status(200).json({categories: categories});
 });
 
 passport.use(new LocalStrategy(
@@ -494,6 +501,10 @@ app.use((err, req, res, next) => {
     }
     else next(err);
 })*/
+
+app.get('*', (_req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // activate server
 app.listen (port, () =>  console.log(`Server ready running at port ${port}` )) ;

@@ -20,7 +20,13 @@ class ImageDao {
                 if(err) reject(err);
                 else {
                     let categories = {};    //Building the enum for the server
-                    rows.forEach(row => categories[row.Name] = row.Id);
+                    rows.forEach(row => {
+                        categories[row.Name] = {
+                            id: row.Id,
+                            iconPath: row.IconImage
+                        }
+                    });
+                    console.log("Categories: ", categories);
                     resolve(categories);
                 }
             })

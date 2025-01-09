@@ -3,7 +3,7 @@
 const container = document.getElementById('scrolling-menu');
 
 const calculateWidth = () => {
-    return container.scrollWidth - container.clientWidth; // Subtract the padding
+    return Math.ceil(container.scrollWidth - container.clientWidth); // Round up to avoid floating point issues
 }
 
 
@@ -16,10 +16,11 @@ const rightArrow = document.querySelector('.right-arrow .scrolling-arrow-button'
 function checkScroll() {
     scrollLength = calculateWidth();
     const currentScroll = container.scrollLeft;
+    
     if (currentScroll === 0) {
         leftArrow.setAttribute("disabled", "true");
         rightArrow.removeAttribute("disabled");
-    } else if (currentScroll >= scrollLength) { // Change this line from === to >=
+    } else if (Math.abs(currentScroll - scrollLength) < 1) { // threshold check
         rightArrow.setAttribute("disabled", "true");
         leftArrow.removeAttribute("disabled");
     } else {
@@ -42,8 +43,9 @@ container.scrollTo({
 
 // Add event listener to the left arrow
 leftArrow.addEventListener('click', () => {
-    if(scrollPosition - 150 >= 0) scrollPosition -= 300; 
+    if(scrollPosition - 1200 >= 0) scrollPosition -= 1200; 
     else scrollPosition = 0;
+    console.log("Scrolling to left: ", scrollPosition);
     container.scrollTo({
         top: 0,
         left: scrollPosition,
@@ -54,7 +56,7 @@ leftArrow.addEventListener('click', () => {
 
 // Add event listener to the right arrow
 rightArrow.addEventListener('click', () => {
-    if(scrollPosition + 150 <= scrollLength) scrollPosition += 300;
+    if(scrollPosition + 1200 <= scrollLength) scrollPosition += 1200;
     else scrollPosition = scrollLength;
     container.scrollTo({
         top: 0,
