@@ -120,3 +120,13 @@ h6 {
 .light-grey-border {
 	border: .1rem #818181 solid !important;
 }
+
+.fade-out {
+    opacity: 1;
+    transition: fadeOut 0.5s ease-out;
+}
+
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 0.5s ease-in forwards;
+}
