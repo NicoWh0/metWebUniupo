@@ -1,7 +1,7 @@
 export default class LoadingScreen {
     static render() {
         return `
-            <div id="loading-screen" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-75" style="z-index: 9999;">
+            <div id="loading-screen" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-dark" style="z-index: 9999;">
                 <div class="text-center text-white">
                     <div class="spinner-border mb-3" role="status">
                         <span class="visually-hidden">Loading...</span>

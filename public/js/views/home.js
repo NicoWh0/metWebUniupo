@@ -4,12 +4,13 @@ import ScrollingMenu from '../templates/home/scrolling_menu.js';
 import ExploreTitleRow from '../templates/home/explore_title_row.js';
 import SearchGallery from '../templates/search/search_gallery.js';
 import LoadingScreen from '../templates/others/loading_screen.js';
+import { appState } from '../app.js';
 
 export class HomeView {
     constructor() {
-        this.mainCategories = []; // Will be populated from server
+        this.mainCategories = [];
         this.sideCategories = [];
-        this.categories = [];     // Will be populated from server
+        this.categories = [];    
         
         // Pre-instantiate components
         this.carousel = null;
@@ -19,8 +20,6 @@ export class HomeView {
     }
 
     async render() {
-        // Show loading screen
-        LoadingScreen.show();
 
         try {
             // Start loading data immediately
@@ -42,7 +41,7 @@ export class HomeView {
 
             // Wait for data and update components
             await dataPromise;
-            this.updateComponents();
+            await this.updateComponents();
 
             // Show all components
             document.querySelectorAll('#content > div').forEach(el => {
@@ -66,18 +65,11 @@ export class HomeView {
 
     async loadData() {
         try {
-            // Load categories
-            const categoriesResponse = await fetch('/categories');
-            const categoriesData = await categoriesResponse.json();
+            // Use categories from appState
+            const mainCategoryNames = appState.mainCategories.map(cat => cat.name);
             
             // Convert categories and filter main ones
-            const mainCategoryNames = ['Pittura', 'Disegno', 'Fotografia'];
-            
-            this.categories = Object.entries(categoriesData.categories).map(([name, details]) => ({
-                name,
-                id: details.id,
-                iconPath: details.iconPath
-            }));
+            this.categories = appState.categories;
 
             // Filter main categories in the correct order
             this.mainCategories = mainCategoryNames
@@ -86,7 +78,7 @@ export class HomeView {
 
             // Filter side categories
             this.sideCategories = this.categories.filter(
-                entry => !mainCategoryNames.find(name => name === entry.name)
+                category => !mainCategoryNames.includes(category.name)
             );
 
             // Instantiate components that need data
@@ -98,7 +90,7 @@ export class HomeView {
         }
     }
 
-    updateComponents() {
+    async updateComponents() {
         // Update carousel
         const carouselContainer = document.getElementById('carousel-row');
         if (carouselContainer && this.carousel) {
@@ -112,10 +104,10 @@ export class HomeView {
         }
 
         // Initialize components after rendering
-        this.initializeComponents();
+        await this.initializeComponents();
     }
 
-    initializeComponents() {
+    async initializeComponents() {
         // Initialize Bootstrap carousel
         const carouselElement = document.getElementById('carouselTop');
         if (carouselElement) {

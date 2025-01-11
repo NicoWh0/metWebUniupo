@@ -94,6 +94,11 @@
     color: #cfcfcf !important;
 }
 
+.submit-button:disabled {
+    background-color: #e6a732; 
+    cursor: not-allowed;
+}
+
 #user-and-submit > #user-dropdown-menu {
     user-select: none;
     background-color: #fafae3;
@@ -247,6 +252,41 @@
 	opacity: 100%;
 }
 
+/* Category dropdown menu styling */
+.category-menu {
+    max-height: 200px;  /* Fixed height */
+    overflow-y: auto;   /* Enable vertical scrolling */
+    scrollbar-width: thin;  /* Firefox */
+    scrollbar-color: #666 #201f1f;  /* Firefox: thumb and track colors */
+}
+
+/* Webkit (Chrome, Safari, Edge) scrollbar styling */
+.category-menu::-webkit-scrollbar {
+    width: 8px;
+}
+
+.category-menu::-webkit-scrollbar-track {
+    background: #201f1f;
+    border-radius: 4px;
+}
+
+.category-menu::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 4px;
+}
+
+.category-menu::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
+/* Ensure dropdown items are properly padded and aligned */
+.category-menu .dropdown-item {
+    padding: 8px 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 #tags-container {
     display: flex;
     flex-wrap: wrap;
@@ -293,7 +333,7 @@
 	text-align: center;
 }
 
-.category-option::before {
+.category-option::before, .category-dropdown::before {
     content: '';
     position: absolute;
     top: 0;
@@ -307,7 +347,7 @@
     z-index: -1;
 }
 
-.category-option::after {
+.category-option::after, .category-dropdown::after {
     content: '';
     position: absolute;
     top: 0;
@@ -327,15 +367,28 @@
 }
 
 .category-dropdown {
-    background-color: #3a3a3a;
+    position: relative !important;
+    background-color: #2a2a2a;
+    background-position: center;
+    background-size: cover;
+    color: #ffffff;
+    font-weight: bolder;
+    text-shadow: 0 0 8px black;
+    z-index: 1;
+    transition: all 0.3s ease;
+    text-align: center;
     border: 1px solid #4a4a4a;
+    overflow: hidden;
 }
 
 .category-menu {
     background-color: #2a2a2a;
     border: 1px solid #4a4a4a;
     padding: 0;
-    overflow: hidden;
+    max-height: 200px !important;
+    overflow-y: auto !important;  
+    scrollbar-width: thin;
+    scrollbar-color: #666 #201f1f;
 }
 
 .dropdown-toggle::after {
@@ -407,6 +460,9 @@
     }
 }
 
+
+
+
 /* Footer Media Query */
 
 @media only screen and (max-width: 440px) {
@@ -414,3 +470,4 @@
 		font-size: .85em;
 	}
 }
+

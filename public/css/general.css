@@ -65,6 +65,14 @@ body {
 	line-height: 1.1em;
 }
 
+/* Initial loading state */
+body.loading {
+	visibility: hidden;
+	opacity: 0;
+	background-color: rgb(33, 37, 41);
+	transition: opacity 0.3s ease;
+}
+
 h1, h2, h3, h4, h5, h6 {
 	font-weight: bold;
 }

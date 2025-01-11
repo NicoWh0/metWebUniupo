@@ -6,7 +6,7 @@ class Navbar {
     }
 
     render() {
-        if(this.user !== null) {
+        if(this.user) {
             return `
                 <button id="offcanvas-button" class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop" aria-controls="offcanvasTop">≡</button>
                 <div class="offcanvas offcanvas-top bg-dark" tabindex="-1" id="offcanvasTop" aria-labelledby="offcanvasTopLabel">
@@ -31,7 +31,7 @@ class Navbar {
                                                 <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
                                                 <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
                                             </svg>
-                                            <span id="offcanvas-username">${user.username}</span>
+                                            <span id="offcanvas-username">${this.user.username}</span>
                                         </div>
                                     </a>
                                 </div>
@@ -72,7 +72,7 @@ class Navbar {
                         <!--<img class="rounded rounded-circle border border-1 border-opacity-50 border-light" id="user-image" src="img/image_chart/nicowho.jpeg"/>-->
                     </a>
                     <div id="user-dropdown-menu" class="dropdown-menu">
-                        <h5 class="dropdown-header">${user.username}</h5>
+                        <h5 class="dropdown-header">${this.user.username}</h5>
                         <a class="dropdown-item" href="user.html">Visualizza Profilo</a>
                         <a class="dropdown-item" href="#">Modifica Profilo</a>
                         <div class="dropdown-divider"></div>

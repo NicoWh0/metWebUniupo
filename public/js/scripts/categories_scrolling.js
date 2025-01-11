@@ -6,12 +6,19 @@ const calculateWidth = () => {
     return Math.ceil(container.scrollWidth - container.clientWidth); // Round up to avoid floating point issues
 }
 
-
 let scrollLength = calculateWidth();
 
 // Get the left and right arrow elements
 const leftArrow = document.querySelector('.left-arrow .scrolling-arrow-button');
 const rightArrow = document.querySelector('.right-arrow .scrolling-arrow-button');
+
+// Calculate scroll amount based on container width
+const calculateScrollAmount = () => {
+    // Get the visible width of the container
+    const visibleWidth = container.clientWidth;
+    // Scroll 80% of the visible width
+    return Math.floor(visibleWidth * 0.8);
+};
 
 function checkScroll() {
     scrollLength = calculateWidth();
@@ -20,7 +27,7 @@ function checkScroll() {
     if (currentScroll === 0) {
         leftArrow.setAttribute("disabled", "true");
         rightArrow.removeAttribute("disabled");
-    } else if (Math.abs(currentScroll - scrollLength) < 1) { // threshold check
+    } else if (Math.abs(currentScroll - scrollLength) < 1) {
         rightArrow.setAttribute("disabled", "true");
         leftArrow.removeAttribute("disabled");
     } else {
@@ -43,9 +50,12 @@ container.scrollTo({
 
 // Add event listener to the left arrow
 leftArrow.addEventListener('click', () => {
-    if(scrollPosition - 1200 >= 0) scrollPosition -= 1200; 
-    else scrollPosition = 0;
-    console.log("Scrolling to left: ", scrollPosition);
+    const scrollAmount = calculateScrollAmount();
+    if(scrollPosition - scrollAmount >= 0) {
+        scrollPosition -= scrollAmount;
+    } else {
+        scrollPosition = 0;
+    }
     container.scrollTo({
         top: 0,
         left: scrollPosition,
@@ -56,8 +66,12 @@ leftArrow.addEventListener('click', () => {
 
 // Add event listener to the right arrow
 rightArrow.addEventListener('click', () => {
-    if(scrollPosition + 1200 <= scrollLength) scrollPosition += 1200;
-    else scrollPosition = scrollLength;
+    const scrollAmount = calculateScrollAmount();
+    if(scrollPosition + scrollAmount <= scrollLength) {
+        scrollPosition += scrollAmount;
+    } else {
+        scrollPosition = scrollLength;
+    }
     container.scrollTo({
         top: 0,
         left: scrollPosition,

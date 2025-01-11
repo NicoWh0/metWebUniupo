@@ -5,15 +5,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const tagInput = document.getElementById('image-tags');
     const tagsContainer = document.getElementById('tags-container');
     const form = document.getElementById('upload-image-form');
-    const categoryItems1 = document.querySelectorAll('#categoryMenu1 .category-option');
     const categoryButton1 = document.getElementById('categoryDropdown1');
     const selectedCategoryInput1 = document.getElementById('selectedCategory1');
 
-    const categoryItems2 = document.querySelectorAll('#categoryMenu2 .category-option');
     const categoryButton2 = document.getElementById('categoryDropdown2');
     const selectedCategoryInput2 = document.getElementById('selectedCategory2');
 
-    const categoryItems3 = document.querySelectorAll('#categoryMenu3 .category-option');
     const categoryButton3 = document.getElementById('categoryDropdown3');
     const selectedCategoryInput3 = document.getElementById('selectedCategory3');
 

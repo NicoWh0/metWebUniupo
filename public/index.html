@@ -5,15 +5,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
         <title>GroundArt</title>
         <link rel="icon" type="image/png" href="/favicon.png">
-        <link rel="icon" type="image/x-icon" href="/favicon.ico">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri&display=swap" rel="stylesheet">
         <link href="https://fonts.cdnfonts.com/css/luminari" rel="stylesheet">
         <link rel="stylesheet" href="css/styles.css">        
+        <style>
+        </style>
     </head>
-    <body>
+    <body class="loading">
         <header id="navbar" class="nav navbar-dark bg-dark justify-content-between d-flex align-items-center border-bottom">
             <!--Dynamically created-->
         </header> 
@@ -92,31 +93,12 @@
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-            <!-- Dynamically created-->
-        </div>
-        <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content standard-background">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="uploadImageLabel">Registrazione</h1>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form>
-                            Qui il form per la registrazione
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                        <button type="submit" form="upload-image-form" class="btn btn-primary submit-button">Registrati</button>
-                    </div>
-                </div>
-            </div>
-        </div>
         <main id="content" class="container-fluid d-flex flex-column">
-            <!-- Main content of the page -->>
+            <!-- Main content of the page -->
         </main>
+        <div id="modals">
+            <!-- Modals will go here -->
+        </div>
         <footer id="footer" class="container-fluid">
             <div class="row row-cols-3 d-flex justify-content-around">
                 <div class="col-sm-2 d-flex flex-column">
@@ -163,6 +145,6 @@
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
         <script type="module" src="js/app.js"></script>
-        <script src="js/scripts/upload_image.js"></script>
+        <!-- <script src="js/scripts/upload_image.js"></script> -->
     </body>
 </html>

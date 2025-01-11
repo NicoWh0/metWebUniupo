@@ -102,12 +102,34 @@ app.use(express.json());
 
 // set up the 'public' component as a static website 
 app.use(express.static('public'));
-app.use(express.static('db_images'));
-app.get('/', (_req, res) => res.redirect('/home'));
 
 //Enum for the categories
-let categories = {};
-imageDao.getAllCategories().then(result => categories = result).catch(err => {throw err});
+imageDao.getAllCategories().then(result => app.set('categories', result)).catch(err => {throw err});
+
+app.get('/imageFile/:userId/:type/:filename', (req, res) => {
+    const { userId, type, filename } = req.params;
+    
+    // Validate the request if needed
+    // For example, check if private images should be accessible
+    
+    // Build the file path
+    const filePath = path.join(
+        __dirname,
+        'db_images',
+        userId,
+        type, // 'published' or 'profile'
+        filename
+    );
+
+    // Send the file or a default image if not found
+    res.sendFile(filePath, (err) => {
+        if (err) {
+            console.error('Error sending file:', err);
+            // Send a default image or 404
+            res.status(404).send('Image not found');
+        }
+    });
+});
 
 
 //REST API
@@ -124,8 +146,8 @@ app.get('/etiquette', (_req, res) => {
     res.status(200).json({etiquette: 'Comportati bene!'});
 });
 
-app.get('/categories', (_req, res) => {
-    return res.status(200).json({categories: categories});
+app.get('/categories', (req, res) => {
+    return res.status(200).json({categories: req.app.get('categories')});
 });
 
 passport.use(new LocalStrategy(
@@ -231,28 +253,86 @@ app.post('/login', check(['username', 'password']).notEmpty(), function(req, res
     })(req, res, next);
 });
 
+// Helper function to check if a category is main
+function isMainCategory(category, serverCategories) {
+    const mainCategoryNames = ['Pittura', 'Disegno', 'Fotografia'];
+    
+    if (typeof category === 'string') {
+        // If it's a name, check directly
+        return mainCategoryNames.includes(category);
+    } else {
+        // If it's an ID, find the category and check its name
+        const categoryObj = Object.entries(serverCategories)
+            .find(([_, details]) => details.id === parseInt(category));
+        return categoryObj && mainCategoryNames.includes(categoryObj[0]);
+    }
+}
+
 app.post('/images/upload', storeImage, isLogged,
     [
         check('title').isLength({max: 24, min: 6}),
-        check('description').isString().isLength({max: 128}), //can be empty
-        check('categories').customSanitizer(function(values) {
-            return typeof values === 'string' ? [values] : values;
-        }).custom(function(values) {
-            //console.log(`Categories = ${values}... length = ${values.length}`);
-            //for(const el of values) console.log('Valore ' + el);
-            if(values.length <= 3 && values.length > 0) {
-                for(const id of values) {
-                    if( !(id in categories) ) return Promise.reject('Invalid category name.');
+        check('description').isString().isLength({max: 128}),
+        check('categories')
+            .customSanitizer(values => {
+                // Convert single value to array
+                return typeof values === 'string' ? [values] : values;
+            })
+            .custom(async (values, { req }) => {
+                // Check array length
+                if (!values || values.length < 1 || values.length > 3) {
+                    throw new Error('Devi selezionare da 1 a 3 categorie.');
                 }
-                return Promise.resolve('Ok.');
-            }
-            return Promise.reject('A number of 1-3 categories is required.');
-        }),
+
+                const serverCategories = req.app.get('categories') || {};
+                
+                // Validate first category is a main category
+                const firstCategory = values[0];
+                if (!isMainCategory(firstCategory, serverCategories)) {
+                    throw new Error('La prima categoria deve essere una categoria principale (Fotografia, Pittura o Disegno).');
+                }
+
+                // Convert and validate all categories
+                const categoryIds = values.map((value, index) => {
+                    const isId = !isNaN(value);
+                    
+                    if (isId) {
+                        // If it's an ID, verify it exists
+                        const exists = Object.values(serverCategories)
+                            .some(cat => cat.id === parseInt(value));
+                        if (!exists) throw new Error(`La categoria con ID ${value} non esiste.`);
+                        
+                        // For categories after the first one, ensure they're not main
+                        if (index > 0 && isMainCategory(value, serverCategories)) {
+                            throw new Error('Le categorie secondarie non possono essere categorie principali.');
+                        }
+                        
+                        return parseInt(value);
+                    } else {
+                        // If it's a name, get its ID
+                        const category = serverCategories[value];
+                        if (!category) throw new Error(`La categoria "${value}" non esiste.`);
+                        
+                        // For categories after the first one, ensure they're not main
+                        if (index > 0 && isMainCategory(value, serverCategories)) {
+                            throw new Error('Le categorie secondarie non possono essere categorie principali.');
+                        }
+                        
+                        return category.id;
+                    }
+                });
+
+                // Check for duplicates
+                if (new Set(categoryIds).size !== categoryIds.length) {
+                    throw new Error('Non puoi selezionare la stessa categoria più volte.');
+                }
+
+                req.categoryIds = categoryIds;
+                return true;
+            }),
         check('tags').customSanitizer(function(values) {
             if(typeof values === 'string') return [values];
             return [...new Set(values)];
         }).custom(function(values) {
-            //console.log(`Tags = ${values}`);
             if(values.length <= 16) {
                 for(const tag of values) {
                     if(!typeof tag === 'string') return Promise.reject('Tag is not a string.');
@@ -278,9 +358,10 @@ app.post('/images/upload', storeImage, isLogged,
             "path" : imageStorePath.replace(':id', req.user.id),
             "author" : req.user.id,
             "tags" : req.body.tags.map(el => el.toLowerCase()),
-            "categories" : (array => array.map(el => categories[el]))(req.body.categories),
+            "categories" : req.categoryIds, // Use the validated category IDs
             "extention" : path.extname(req.body.originalfilename)
         };
+        
         console.log('I dati sono: ');
         console.log(data);
         imageDao.uploadImage(data).then(id => {

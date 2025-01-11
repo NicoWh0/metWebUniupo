@@ -1,115 +1,114 @@
 "use strict";
 import page from '//unpkg.com/page/page.mjs';
 import { HomeView } from './views/home.js';
-import Navbar from "./templates/navbar/navbar.js";
-import LoginModal from "./templates/modals/login_modal.js";
-
+import Navbar from './templates/navbar/navbar.js';
+import API from './api.js';
+import LoginModal from './templates/modals/login_modal.js';
+import RegisterModal from './templates/modals/register_modal.js';
+import UploadModal from './templates/modals/upload_modal.js';
+import LoadingScreen from './templates/others/loading_screen.js';
 
 // App state management
 const appState = {
     auth: {
         isLoggedIn: false,
         user: null
-    }
+    },
+    categories: [],
+    mainCategories: []
 };
 
-const fetchHeaders = {
-    headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    }
-}
+// Event bus for auth state changes
+const authEvents = new EventTarget();
 
+LoadingScreen.show();
+
+// Initialize views
 const homeView = new HomeView();
 
-// Define routes
+// Route handlers
 const renderHome = async () => {
     document.title = 'GroundArt - Home';
     await homeView.render();
 };
 
+// Define routes
 page('/', '/home');
 page('/home', renderHome);
 
-// Navbar management
+// Update auth state and notify components
+async function updateAuthState() {
+    const user = await API.getCurrentUser();
+    appState.auth = {
+        isLoggedIn: user !== null,
+        user: user ?? null
+    };
+    // Dispatch auth state change event
+    authEvents.dispatchEvent(new CustomEvent('authStateChanged', { 
+        detail: appState.auth 
+    }));
+    updateNavbar();
+    updateModals();
+}
+
+// Update navbar based on auth state
 function updateNavbar() {
-    const navbarContainer = document.querySelector('#navbar');
-    const loginModalContainer = document.querySelector('#loginModal');
-
-    if (!navbarContainer) return;
-
-    const navbar = new Navbar(appState.auth.user);
-
-    const loginModal = new LoginModal(appState.auth.user);
-
-    const navContent = navbar.render();
-
-    const loginModalContent = loginModal.render();
-
-    navbarContainer.innerHTML = navContent;
-    loginModalContainer.innerHTML = loginModalContent;
-}
-
-// Check authentication status on page load
-async function checkAuthStatus() {
-    try {
-        const response = await fetch('/users/me', fetchHeaders);
-        const data = await response.json();
-
-        if(response.status === 404) {
-            appState.auth = {
-                isLoggedIn: false,
-                user: null
-            }
-        } else {
-            appState.auth = {
-                isLoggedIn: true,
-                user: data.user
-            }
-        }
-        
-        updateNavbar();
-    } catch (error) {
-        console.error('Error checking auth status:', error);
-    }
-}
-
-async function getCategories() {
-    try {
-        const response = await fetch('/categories', fetchHeaders);
-        const data = await response.json();
-        
-        const categoryContainer = document.querySelector('#scrolling-menu');
-        if (categoryContainer && data.categories) {
-            // Convert the object into an array of categories
-            const categoriesArray = Object.entries(data.categories).map(([name, details]) => ({
-                name: name,
-                id: details.id,
-                iconPath: details.iconPath
-            }));
-
-            const categoryComponent = new Categories(categoriesArray);
-            categoryContainer.innerHTML = categoryComponent.renderScrollMenu();
-        }
-
-    } catch(error) {
-        console.error('Error getting categories:', error);
-    }
-}
-
-// Initialize app
-document.addEventListener('DOMContentLoaded', () => {
-    checkAuthStatus();
-    getCategories();
-
-    // Update navbar (your existing code)
     const navbarContainer = document.querySelector('#navbar');
     if (navbarContainer) {
         const navbar = new Navbar(appState.auth.user);
         navbarContainer.innerHTML = navbar.render();
     }
+}
 
-    // Start the router
-    page();
+function updateModals() {
+    const modalsContainer = document.querySelector('#modals');
+    if(modalsContainer) {
+        if(!appState.auth.isLoggedIn) {
+            const loginModal = new LoginModal();
+            modalsContainer.insertAdjacentHTML('beforeend', loginModal.render());
+            loginModal.attachEventListeners();
+            const registerModal = new RegisterModal();
+            modalsContainer.insertAdjacentHTML('beforeend', registerModal.render());
+        }
+        else {
+            const uploadModal = new UploadModal();
+            modalsContainer.insertAdjacentHTML('beforeend', uploadModal.render());
+            uploadModal.attachEventListeners();
+        }
+    }
+}
+
+// Initialize app
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // Load categories (can be done in parallel with auth check)
+        appState.categories = await API.getCategories();
+
+        // Filter main categories
+        const mainCategoryNames = ['Pittura', 'Disegno', 'Fotografia'];
+        appState.mainCategories = mainCategoryNames
+            .map(name => appState.categories.find(cat => cat.name === name))
+            .filter(cat => cat !== undefined);
+
+        // Check auth status 
+        await updateAuthState();
+        
+        // Start the router
+        page();
+
+        // Remove loading state
+        document.body.classList.remove('loading');
+        document.body.style.opacity = '1';
+        document.body.style.visibility = 'visible';
+
+    } catch (error) {
+        console.error('Error initializing app:', error);
+        // Handle initialization error
+        document.body.classList.remove('loading');
+        document.body.style.opacity = '1';
+        document.body.style.visibility = 'visible';
+    }
 });
+
+export { appState, authEvents };
 
