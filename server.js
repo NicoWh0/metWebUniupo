@@ -556,7 +556,7 @@ app.get('/images/:id/comments/:commentId/isliked', isLogged, (req, res) => {
 app.get('/users/me', (req, res) => {
     if(!req.isAuthenticated()) return res.status(404).json({error: 'User not found'});
     userDao.getUserInfoById(req.user.id).then(user => {
-        res.status(200).json(user);
+        return res.status(200).json(user);
     }).catch(err => {
         return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
     });
@@ -568,7 +568,7 @@ app.delete('/users/:id', isLogged, (req, res, next) => {
         fs.rmSync(storePath.replace(':id', id), {recursive: true});
         req.logOut(function(err) {
             if(err) next(err);
-            res.status(200).json({message: 'User deleted.'});
+            return res.status(200).json({message: 'User deleted.'});
         });
     }).catch(err => {
         return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
@@ -579,7 +579,7 @@ app.delete('/users/:id', isLogged, (req, res, next) => {
 app.delete('/logout', (req, res, next) => {
     req.logOut(function(err) { 
         if(err) next(err);
-        res.redirect('/home');
+        return res.status(200).end();
     });
 });
 

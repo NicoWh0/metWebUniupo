@@ -104,7 +104,6 @@ class API {
 
             if (!response.ok) {
                 const error = await response.json();
-                console.log(error)
                 throw new Error(error.message || 'Login failed');
             }
 
@@ -114,6 +113,24 @@ class API {
             console.error('Login error:', error);
             throw error; // Re-throw to handle it in the UI
         }
+    }
+
+    static async logout() {
+        try {
+            const response = await fetch('/logout', {
+                method: 'DELETE',
+                headers: this.headers
+            });
+    
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Logout failed');
+            }
+        } catch(error) {
+            console.error('Logout error:', error);
+            throw error; // Re-throw to handle it in the UI
+        }
+        
     }
 
     static async uploadImage(data) {

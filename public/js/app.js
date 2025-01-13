@@ -57,6 +57,7 @@ function updateNavbar() {
     if (navbarContainer) {
         const navbar = new Navbar(appState.auth.user);
         navbarContainer.innerHTML = navbar.render();
+        navbar.attachEventListeners();
     }
 }
 
