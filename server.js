@@ -106,11 +106,11 @@ app.use(express.static('public'));
 //Enum for the categories
 imageDao.getAllCategories().then(result => app.set('categories', result)).catch(err => {throw err});
 
+
+//REST API
+
 app.get('/imageFile/:userId/:type/:filename', (req, res) => {
     const { userId, type, filename } = req.params;
-    
-    // Validate the request if needed
-    // For example, check if private images should be accessible
     
     // Build the file path
     const filePath = path.join(
@@ -130,9 +130,6 @@ app.get('/imageFile/:userId/:type/:filename', (req, res) => {
         }
     });
 });
-
-
-//REST API
 
 app.get('/favicon.ico', (_req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'favicon.png'));
@@ -207,7 +204,7 @@ app.post('/registration',
         check('username', 'The username must be 4-20 characters long').trim().isLength({max: 20, min: 4}),
         check('password', 'The password must be 8-16 characters long and must contain 1 uppercase letter, 1 number and 1 special character').isLength({max: 16, min: 8}).isStrongPassword(),
         check('email', 'A valid mail is needed').trim().isEmail(),
-        check('confirmpassword').custom((value, {req}) => {
+        check('confirmPassword').custom((value, {req}) => {
             return value === req.body.password ? Promise.resolve('Ok.') : Promise.reject('Password mismatch.');
         })
     ],
@@ -223,7 +220,7 @@ app.post('/registration',
             return res.status(201).end();
         }).catch(err => {
             if(err.errno === 19 && err.code === 'SQLITE_CONSTRAINT' && err.message.match(/UNIQUE constraint failed/)) {
-                return res.status(409).json({error: 'Username or Email already in use by another account.'});
+                return res.status(409).json({message: 'Username or Email already in use by another account.'});
             }
             return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
         });
@@ -257,7 +254,7 @@ app.post('/login', check(['username', 'password']).notEmpty(), function(req, res
 function isMainCategory(category, serverCategories) {
     const mainCategoryNames = ['Pittura', 'Disegno', 'Fotografia'];
     
-    if (typeof category === 'string') {
+    if (isNaN(category)) {
         // If it's a name, check directly
         return mainCategoryNames.includes(category);
     } else {
@@ -270,20 +267,20 @@ function isMainCategory(category, serverCategories) {
 
 app.post('/images/upload', storeImage, isLogged,
     [
-        check('title').isLength({max: 24, min: 6}),
+        check('title').isLength({max: 24, min: 5}),
         check('description').isString().isLength({max: 128}),
         check('categories')
             .customSanitizer(values => {
                 // Convert single value to array
                 return typeof values === 'string' ? [values] : values;
             })
-            .custom(async (values, { req }) => {
+            .custom((values, { req }) => {
                 // Check array length
                 if (!values || values.length < 1 || values.length > 3) {
                     throw new Error('Devi selezionare da 1 a 3 categorie.');
                 }
 
-                const serverCategories = req.app.get('categories') || {};
+                const serverCategories = req.app.get('categories');
                 
                 // Validate first category is a main category
                 const firstCategory = values[0];
@@ -370,6 +367,9 @@ app.post('/images/upload', storeImage, isLogged,
         }).catch(err => {
             console.log('Errore nel database: ' + err);
             fs.unlinkSync(tempStorePath + req.body.originalfilename);
+            if(err.errno === 19 && err.code === 'SQLITE_CONSTRAINT' && err.message.match(/UNIQUE constraint failed/)) {
+                return res.status(409).json({message: 'Title already in use.'});
+            }
             return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
         });
     }
@@ -415,6 +415,42 @@ app.post('/users/:id/cover', storeImage, isLogged, (req, res) => {
     });
 });
 
+
+app.get('/images/search', (req, res) => {
+    console.log(req.query);
+    let options = {};
+    if(!req.query.value) {
+        imageDao.getRandomImages().then(result => res.status(200).json(result)).catch(err => {
+            return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
+        });
+    } else {
+        switch(req.query.param) {
+            case 'all': options['all'] = req.query.value; break; 
+            case 'title': options['title'] = req.query.value; break;
+            case 'author': options['author'] = req.query.value; break;
+            case 'category': options['category'] = req.query.value; break;
+            case 'tag': options['tag'] = req.query.value; break;
+            default: return res.status(422).json({error: 'Invalid search parameter.'});
+        }
+        if(req.query.order) {
+            switch(req.query.order) {
+                case 'date': options['order'] = 'UploadDate'; break;
+                case 'likes': options['order'] = 'Likes'; break;
+                case 'comments': options['order'] = 'Comments'; break;
+                default: return res.status(422).json({error: 'Invalid order parameter.'});
+            }
+        }
+        imageDao.getImages(options).then(result => res.status(200).json(result)).catch(err => {
+            return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
+        });
+    }
+});
+
+app.get('/images/tags', (_req, res) => {
+    imageDao.getMostUsedTags().then(result => res.status(200).json(result)).catch(err => {
+        return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
+    });
+})
 
 app.get('/images/:id', (req, res) => {
     imageDao.getImageById(req.params.id).then(result => {
@@ -513,31 +549,6 @@ app.post('/images/:id/comments/:commentId/unlike', isLogged, (req, res) => {
 
 app.get('/images/:id/comments/:commentId/isliked', isLogged, (req, res) => {
     commentDao.isCommentLiked(req.user.id, req.params.commentId).then(result => res.status(200).json(result)).catch(err => {
-        return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
-    });
-});
-
-app.get('/search', (req, res) => {
-    console.log(req.query);
-    let options = {};
-    if(!req.query.value) return res.status(422).json({error: 'Search value is not present.'});
-    switch(req.query.param) {
-        case 'all': options['all'] = req.query.value; break; 
-        case 'title': options['title'] = req.query.value; break;
-        case 'author': options['author'] = req.query.value; break;
-        case 'category': options['category'] = req.query.value; break;
-        case 'tag': options['tag'] = req.query.value; break;
-        default: return res.status(422).json({error: 'Invalid search parameter.'});
-    }
-    if(req.query.order) {
-        switch(req.query.order) {
-            case 'date': options['order'] = 'UploadDate'; break;
-            case 'likes': options['order'] = 'Likes'; break;
-            case 'comments': options['order'] = 'Comments'; break;
-            default: return res.status(422).json({error: 'Invalid order parameter.'});
-        }
-    }
-    imageDao.getImages(options).then(result => res.status(200).json(result)).catch(err => {
         return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
     });
 });

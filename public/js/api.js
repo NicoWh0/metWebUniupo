@@ -6,6 +6,11 @@ class API {
         'Accept': 'application/json'
     };
 
+    static multipartHeaders = {
+        //'Content-Type': 'multipart/form-data', (il browser lo setta da solo)
+        'Accept': 'application/json'
+    }
+
     // Auth endpoints
     static async getCurrentUser() {
         try {
@@ -35,14 +40,40 @@ class API {
         }
     }
 
+    // Tags endopoints
+    static async getMostUsedTags() {
+        try {
+            const response = await fetch('/images/tags', { headers: this.headers });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching most used tags:', error);
+            return [];
+        }
+    }
+
+    static async getImageFile(imagePath) {
+        const fetchPath = imagePath.replace('db_images', '/imageFile');
+
+        try {
+            const image = await fetch(fetchPath, {headers: this.headers});
+            console.log(image);
+            return image;
+        } catch(error) {
+            console.error('Error fetching image file: ', error);
+            throw error;
+        }
+    }
+
     // Images endpoints
     static async getRandomImages() {
         try {
-            const response = await fetch('/api/images/random', { headers: this.headers });
+            const response = await fetch('/images/search', { headers: this.headers });
             const data = await response.json();
-            return data.images;
+            console.log(data);
+            return data;
         } catch (error) {
-            console.error('Error fetching random images:', error);
+            console.error('Error fetching random images: ', error);
             return [];
         }
     }
@@ -73,6 +104,7 @@ class API {
 
             if (!response.ok) {
                 const error = await response.json();
+                console.log(error)
                 throw new Error(error.message || 'Login failed');
             }
 
@@ -81,6 +113,26 @@ class API {
         } catch (error) {
             console.error('Login error:', error);
             throw error; // Re-throw to handle it in the UI
+        }
+    }
+
+    static async uploadImage(data) {
+        try {
+            const response = await fetch('/images/upload', {
+                method: 'POST',
+                headers: this.multipartHeaders,
+                body: data
+            });
+
+            if(!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Upload Image failed');
+            }
+
+            return response;
+        } catch (error) {
+            console.error('Upload Image error: ', error);
+            throw error;
         }
     }
 }

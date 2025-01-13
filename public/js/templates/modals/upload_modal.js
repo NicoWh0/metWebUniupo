@@ -1,6 +1,7 @@
 "use strict";
 
 import { appState } from '../../app.js';
+import API from '../../api.js';
 
 class UploadModal {
     constructor() {
@@ -69,7 +70,7 @@ class UploadModal {
                                     <input type="file" class="form-control" id="image-file" accept="image/*" required>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="image-tags" class="col-form-label">Tags (max 10):</label>
+                                    <label for="image-tags" class="col-form-label">Tags (max 16):</label>
                                     <input type="text" class="form-control" id="image-tags" placeholder="Aggiungi un tag e premi Enter">
                                     <div id="tags-container" class="mt-2"></div>
                                 </div>
@@ -112,7 +113,7 @@ class UploadModal {
         if (e.key === 'Enter') {
             e.preventDefault();
             const tag = e.target.value.trim();
-            if (tag && this.tags.length < 10 && !this.tags.includes(tag)) {
+            if (tag && this.tags.length < 16 && !this.tags.includes(tag)) {
                 this.addTag(tag, tagsContainer);
                 e.target.value = '';
             }
@@ -233,11 +234,10 @@ class UploadModal {
 
     async handleSubmit(e) {
         e.preventDefault();
-        const formData = new FormData();
-        formData.append('title', document.getElementById('image-title').value);
-        formData.append('description', document.getElementById('image-description').value);
-        formData.append('imageFile', document.getElementById('image-file').files[0]);
-        formData.append('tags', JSON.stringify(this.tags));
+        const imageFile = document.getElementById('image-file').files[0];
+        const title = document.getElementById('image-title').value;
+        const description = document.getElementById('image-description').value;
+        const tags = this.tags;
         
         // Collect selected categories
         const categories = [];
@@ -245,14 +245,84 @@ class UploadModal {
             const value = document.getElementById(`selectedCategory${i}`).value;
             if (value) categories.push(value);
         }
-        formData.append('categories', JSON.stringify(categories));
+
+        // Prepare the data object
+        const formData = new FormData();
+        formData.append('imageFile', imageFile); // Append the file
+        formData.append('title', title);
+        formData.append('description', description ?? '');
+        categories.forEach(cat => formData.append("categories[]", cat));
+        tags.forEach(tag => formData.append("tags[]", tag));
 
         try {
-            // Here you would call your API to upload the image
-            console.log('Form data ready for submission:', formData);
+            // Send the data to the server
+            await API.uploadImage(formData);
+            console.log('Upload successful:');
+            
+            // Show success message
+            this.showSuccessMessage('Upload successful!');
+
+            // Clear the form fields
+            this.clearForm();
+
         } catch (error) {
             console.error('Upload failed:', error);
+            
+            // Create and append the error message
+            this.showErrorMessage(error.message || 'Upload failed. Please try again.');
         }
+    }
+
+    showSuccessMessage(message) {
+        // Create a div for the success message
+        const successDiv = document.createElement('div');
+        successDiv.className = 'alert alert-success mt-3'; // Bootstrap alert class
+        successDiv.textContent = message;
+
+        // Append the success message to the modal body
+        const modalBody = document.querySelector('#uploadImage .modal-body');
+        modalBody.appendChild(successDiv);
+
+        // Optionally, remove the success message after a certain time
+        setTimeout(() => {
+            successDiv.remove();
+        }, 10000); // Remove after 10 seconds
+    }
+
+    clearForm() {
+        // Clear the form fields
+        document.getElementById('upload-image-form').reset();
+        this.tags = []; 
+
+        // Clear displayed tags in the UI
+        const tagsContainer = document.getElementById('tags-container');
+        tagsContainer.innerHTML = ''; 
+
+        // Reset category selections
+        for (let i = 1; i <= 3; i++) {
+            const categoryButton = document.getElementById(`categoryDropdown${i}`);
+            const beforeCategoryButton = getComputedStyle(categoryButton, '::before');
+            const selectedCategoryInput = document.getElementById(`selectedCategory${i}`);
+            selectedCategoryInput.value = '';
+            categoryButton.textContent = 'Seleziona una categoria'; 
+            beforeCategoryButton.style.backgroundImage = 'none';
+        }
+    }
+
+    showErrorMessage(message) {
+        // Create a div for the error message
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'alert alert-danger mt-3'; // Bootstrap alert class
+        errorDiv.textContent = message;
+    
+        // Append the error message to the modal body
+        const modalBody = document.querySelector('#uploadImage .modal-body');
+        modalBody.appendChild(errorDiv);
+    
+        // Optionally, remove the error message after a certain time
+        setTimeout(() => {
+            errorDiv.remove();
+        }, 10000); // Remove after 10 seconds
     }
 }
 

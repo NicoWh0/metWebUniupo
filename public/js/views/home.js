@@ -5,6 +5,7 @@ import ExploreTitleRow from '../templates/home/explore_title_row.js';
 import SearchGallery from '../templates/search/search_gallery.js';
 import LoadingScreen from '../templates/others/loading_screen.js';
 import { appState } from '../app.js';
+import API from '../api.js';
 
 export class HomeView {
     constructor() {
@@ -15,46 +16,39 @@ export class HomeView {
         // Pre-instantiate components
         this.carousel = null;
         this.scrollingMenu = null;
-        this.exploreTitleRow = new ExploreTitleRow();
-        this.searchGallery = new SearchGallery();
+        this.exploreTitleRow = null;
+        this.searchGallery = null;
     }
 
     async render() {
 
         try {
             // Start loading data immediately
-            const dataPromise = this.loadData();
+            await this.loadData();
 
             // Render initial layout with loading states
             document.getElementById('content').innerHTML = `
-                <div id="carousel-row" class="row-cols-1 invisible">
-                    <div class="text-center p-5">Loading carousel...</div>
+                <div id="carousel-row" class="row-cols-1 fade-in">
+                    
                 </div>
-                <div id="scrolling-menu-wrapper" class="container-fluid d-flex position-relative invisible">
-                    <div class="text-center w-100 p-3">Loading categories...</div>
+                <div id="scrolling-menu-wrapper" class="container-fluid d-flex position-relative fade-in">
+                    
                 </div>
-                <div class="invisible">
-                    ${this.exploreTitleRow.render()}
-                    ${this.searchGallery.render()}
+                <div id="home-content" class="fade-in">
+                
                 </div>
             `;
 
-            // Wait for data and update components
-            await dataPromise;
             await this.updateComponents();
-
-            // Show all components
-            document.querySelectorAll('#content > div').forEach(el => {
-                el.classList.remove('invisible');
-                el.classList.add('fade-in');
-            });
 
         } catch (error) {
             console.error('Error rendering home page:', error);
             // Show error message to user
             document.getElementById('content').innerHTML = `
-                <div class="alert alert-danger m-3" role="alert">
-                    Si è verificato un errore durante il caricamento della pagina. Riprova più tardi.
+                <div class="vh-100 d-flex justify-content-center align-items-center">
+                    <div class="alert alert-danger m-3" role="alert">
+                        Si è verificato un errore durante il caricamento della pagina. Riprova più tardi.
+                    </div>
                 </div>
             `;
         } finally {
@@ -84,6 +78,11 @@ export class HomeView {
             // Instantiate components that need data
             this.carousel = new Carousel(this.mainCategories);
             this.scrollingMenu = new ScrollingMenu(this.sideCategories);
+            const tags = await API.getMostUsedTags();
+            console.log(tags)
+            this.exploreTitleRow = new ExploreTitleRow(tags);
+            const images = await API.getRandomImages();
+            this.searchGallery = new SearchGallery(images);
 
         } catch (error) {
             console.error('Error loading home page data:', error);
@@ -101,6 +100,14 @@ export class HomeView {
         const menuWrapper = document.getElementById('scrolling-menu-wrapper');
         if (menuWrapper && this.scrollingMenu) {
             menuWrapper.innerHTML = this.scrollingMenu.render();
+        }
+
+        const homeContent = document.getElementById('home-content');
+        if(homeContent && this.exploreTitleRow) {
+            homeContent.innerHTML = `
+                ${this.exploreTitleRow.render()}
+                ${this.searchGallery.render()}
+            `;
         }
 
         // Initialize components after rendering
