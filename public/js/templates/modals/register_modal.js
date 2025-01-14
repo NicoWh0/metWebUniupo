@@ -1,5 +1,7 @@
 "use strict";
 
+import API from '../../api.js';
+
 class RegisterModal {
     render() {
         return `
@@ -20,9 +22,11 @@ class RegisterModal {
                                            id="register-email" 
                                            name="email"
                                            required
-                                           pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                                           pattern="^([a-z0-9._%+]|-)+@([a-z0-9.]|-)+\.[a-z]{2,}$"
+                                           maxlength="320"
+                                    >
                                     <div class="invalid-feedback">
-                                        Inserisci un indirizzo email valido
+                                        Inserisci un indirizzo email valido.
                                     </div>
                                 </div>
 
@@ -34,11 +38,12 @@ class RegisterModal {
                                            id="register-username" 
                                            name="username"
                                            required
-                                           minlength="3"
+                                           minlength="4"
                                            maxlength="20"
-                                           pattern="[A-Za-z0-9_]+">
+                                           pattern="[A-Za-z0-9_]{4,20}"
+                                    >
                                     <div class="invalid-feedback">
-                                        L'username deve essere tra 3 e 20 caratteri e può contenere solo lettere, numeri e underscore
+                                        L'username deve essere tra 4 e 20 caratteri e può contenere solo lettere, numeri e underscore.
                                     </div>
                                 </div>
 
@@ -51,9 +56,10 @@ class RegisterModal {
                                            name="password"
                                            required
                                            minlength="8"
-                                           pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$">
+                                           maxlength="16"
+                                    >
                                     <div class="invalid-feedback">
-                                        La password deve contenere almeno 8 caratteri, una lettera e un numero
+                                        La password deve contenere almeno dagli 8 ai 16 caratteri, una lettera maiuscola, una minuscola, un numero e un carattere speciale.
                                     </div>
                                 </div>
 
@@ -64,9 +70,10 @@ class RegisterModal {
                                            class="form-control" 
                                            id="register-confirm-password" 
                                            name="confirmPassword"
+                                           maxlength="16"
                                            required>
                                     <div class="invalid-feedback">
-                                        Le password non coincidono
+                                        Le password non coincidono.
                                     </div>
                                 </div>
                             </form>
@@ -81,27 +88,59 @@ class RegisterModal {
         `;
     }
 
-    attachValidation() {
+    attachEventListeners() {
+        const modal = document.getElementById('registerModal');
         const form = document.getElementById('register-form');
+        const username = document.getElementById('register-username');
+        const email = document.getElementById('register-email');
         const password = document.getElementById('register-password');
         const confirmPassword = document.getElementById('register-confirm-password');
 
-        // Add password match validation
-        const validatePasswordMatch = () => {
+        modal.addEventListener('hidden.bs.modal', () => {
+            form.reset();
+            form.classList.remove('was-validated');
+            
+            username.setCustomValidity('');
+            email.setCustomValidity('');
+            password.setCustomValidity('');
+            confirmPassword.setCustomValidity('');
+        });
+
+        const validatePassword = () => {
+            const value = password.value;
+            const isValid = 
+                value.length >= 8 &&
+                value.length <= 16 &&
+                /[A-Z]/.test(value) && 
+                /[a-z]/.test(value) &&    
+                /[0-9]/.test(value) &&    
+                /[!@#$%^&*_\-+=]/.test(value); 
+
+            if (!isValid) {
+                password.setCustomValidity('Password non valida');
+            } else {
+                password.setCustomValidity('');
+            }
+        };
+        
+        username.addEventListener('input', () => {
+            username.setCustomValidity('');
+        });
+        email.addEventListener('input', () => {
+            email.setCustomValidity('');
+        });
+        password.addEventListener('input', validatePassword);
+        confirmPassword.addEventListener('input', () => {
             if (password.value !== confirmPassword.value) {
                 confirmPassword.setCustomValidity('Le password non coincidono');
             } else {
                 confirmPassword.setCustomValidity('');
             }
-        };
+        });
 
-        password.addEventListener('change', validatePasswordMatch);
-        confirmPassword.addEventListener('change', validatePasswordMatch);
-
-        // Form validation
-        form.addEventListener('submit', (event) => {
+        form.addEventListener('submit', async (event) => {
             event.preventDefault();
-            
+            validatePassword();
             if (!form.checkValidity()) {
                 event.stopPropagation();
             } else {
@@ -109,13 +148,31 @@ class RegisterModal {
                 const formData = {
                     email: form.email.value,
                     username: form.username.value,
-                    password: form.password.value
+                    password: form.password.value,
+                    confirmPassword: form.confirmPassword.value
                 };
                 
                 // Here you can call your API to register the user
-                console.log('Form data:', formData);
+                try {
+                    await API.register(formData);
+                    console.log('Registration successful');
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+                    modal.hide();
+                    await API.login(formData.username, formData.password);
+                    window.location.reload();
+                } catch(error) {
+                    if(error.cause === 409) {
+                        username.setCustomValidity('Username già in uso da un altro account.');
+                        email.setCustomValidity('Email già in uso da un altro account.');
+                    }
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'alert alert-danger mt-3';
+                    errorDiv.textContent = error.message || 'Registration failed. Please try again.';
+                    form.appendChild(errorDiv);
+                    
+                    setTimeout(() => errorDiv.remove(), 10000);
+                }
             }
-
             form.classList.add('was-validated');
         });
     }

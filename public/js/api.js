@@ -91,6 +91,39 @@ class API {
         }
     }
 
+    static async register(user) {
+        try {
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: this.headers,
+                body: JSON.stringify(user)
+            });
+
+            if(!response.ok) {
+                if(response.status === 409) {
+                    throw new Error('Username o Email già in uso da un altro account.', { cause: response.status });
+                }
+                else if(response.status === 422) {
+                    const json = await response.json();
+                    const errors = json.errors;
+                    const message = 'I seguenti campi non sono validi: ' + errors.map(
+                        error => error.path
+                    ).join(', ');
+                    throw new Error(message, { cause: response.status });
+                } 
+                else {
+                    const serverError = await response.json();
+                    throw new Error(serverError.errors.message, { cause: response.status });
+                }
+            }
+
+            return response;
+        } catch(error) {
+            console.error('Registration error:', error);
+            throw error;
+        }
+    }
+
     static async login(username, password) {
         try {
             const response = await fetch('/login', {
@@ -103,15 +136,22 @@ class API {
             });
 
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Login failed');
+                if(response.status === 401) {
+                    throw new Error('Username o password errati.', { cause: response.status });
+                }
+                else if(response.status === 422) {
+                    throw new Error('Username o password mancanti o dal formato errato.', { cause: response.status });
+                }
+                else {
+                    throw new Error('Errore lato server. Riprova più tardi.', { cause: response.status });
+                }
             }
 
             const user = await response.json();
             return user;
         } catch (error) {
             console.error('Login error:', error);
-            throw error; // Re-throw to handle it in the UI
+            throw error; 
         }
     }
 
@@ -124,11 +164,11 @@ class API {
     
             if (!response.ok) {
                 const error = await response.json();
-                throw new Error(error.message || 'Logout failed');
+                throw new Error(error.message || 'Logout failed', { cause: response.status });
             }
         } catch(error) {
             console.error('Logout error:', error);
-            throw error; // Re-throw to handle it in the UI
+            throw error;
         }
         
     }
@@ -143,7 +183,7 @@ class API {
 
             if(!response.ok) {
                 const error = await response.json();
-                throw new Error(error.message || 'Upload Image failed');
+                throw new Error(error.message || 'Upload Image failed', { cause: response.status });
             }
 
             return response;

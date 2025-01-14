@@ -13,14 +13,26 @@ class LoginModal {
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="login-form">
-                                <div class="form-group mb-3">
+                            <form id="login-form" class="needs-validation" novalidate>
+                                <div class="form-group mb-3 has-validation">
                                     <label for="username" class="col-form-label">Username:</label>
-                                    <input type="text" class="form-control" id="username" required>
+                                    <input type="text" 
+                                           class="form-control" 
+                                           id="login-username" 
+                                           required>
+                                    <div class="invalid-feedback">
+                                        Inserisci il tuo username.
+                                    </div>
                                 </div>
-                                <div class="form-group mb-3">
+                                <div class="form-group mb-3 has-validation">
                                     <label for="password" class="col-form-label">Password:</label>
-                                    <input type="password" class="form-control" id="password" required>
+                                    <input type="password" 
+                                           class="form-control" 
+                                           id="login-password" 
+                                           required>
+                                    <div class="invalid-feedback">
+                                        Inserisci la tua password.
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -37,51 +49,92 @@ class LoginModal {
     }
 
     attachEventListeners() {
+        const modal = document.getElementById('loginModal');
         const form = document.getElementById('login-form');
-        if (form) {
-            form.addEventListener('submit', this.handleLogin);
+        const usernameInput = document.getElementById('login-username');
+        const passwordInput = document.getElementById('login-password');
+
+        modal.addEventListener('hidden.bs.modal', () => {
+            form.reset();
+            form.classList.remove('was-validated');
+            
+            usernameInput.setCustomValidity('');
+            passwordInput.setCustomValidity('');
+            
+            const errorDiv = form.querySelector('.alert');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+        });
+        
+        if(usernameInput && passwordInput) {
+            usernameInput.addEventListener('input', () => {
+                usernameInput.setCustomValidity('');
+            });
+            passwordInput.addEventListener('input', () => {
+                passwordInput.setCustomValidity('');
+            });
         }
-    }
 
-    async handleLogin(e) {
-        e.preventDefault();
-        
-        // Get form data
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        
-        const form = document.getElementById('login-form');
-        const submitButton = document.getElementById('login-submit');
-        const originalText = submitButton.innerHTML;
-        try {
-            // Show loading state
-            submitButton.disabled = true;
-            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                usernameInput.classList.remove('is-invalid');
+                passwordInput.classList.remove('is-invalid');
+                // Add validation class to show feedback
+                form.classList.add('was-validated');
 
-            // Attempt login
-            await API.login(username, password);
-            
-            // Close modal
-            const modal = window.bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-            modal.hide();
-            
-            // Refresh page to update auth state
-            window.location.reload();
+                // Check if the form is valid
+                if (!form.checkValidity()) {
+                    return;
+                }
 
-        } catch (error) {
-            // Show error message
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'alert alert-danger mt-3';
-            errorDiv.textContent = error.message || 'Login failed. Please try again.';
-            form.appendChild(errorDiv);
+                // Get form data
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value.trim();
+                
+                const submitButton = document.getElementById('login-submit');
+                const originalText = submitButton.innerHTML;
 
-            // Remove error message after 10 seconds
-            setTimeout(() => errorDiv.remove(), 10000);
+                try {
+                    // Clear previous error states
+                    usernameInput.setCustomValidity('');
+                    passwordInput.setCustomValidity('');
 
-        } finally {
-            // Reset button state
-            submitButton.disabled = false;
-            submitButton.innerHTML = originalText;
+                    // Show loading state
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+
+                    // Attempt login
+                    await API.login(username, password);
+                    
+                    // Close modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+                    modal.hide();
+                    
+                    // Refresh page to update auth state
+                    window.location.reload();
+
+                } catch (error) {
+                    // Set custom validity to trigger invalid state
+                    usernameInput.setCustomValidity('Invalid credentials');
+                    passwordInput.setCustomValidity('Invalid credentials');
+
+                    // Show error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'alert alert-danger mt-3';
+                    errorDiv.textContent = error.message || 'Login failed. Please try again.';
+                    form.appendChild(errorDiv);
+
+                    setTimeout(() => errorDiv.remove(), 10000);
+
+                } finally {
+                    // Reset button state
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalText;
+                }
+            });
         }
     }
 }

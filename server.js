@@ -84,7 +84,7 @@ const storeImage = multer({
         field: 8 * 1024 * 1024 //8 MB
     },
     fileFilter: function(req, file, cb) {
-        console.log('Prova multer');
+        console.log('Avvio filtro file (multer)');
         console.log(req.body);
         const extention = path.extname(file.originalname);
         if(req.isAuthenticated() && (extention === '.jpg' || extention === '.jpeg' || extention === '.png'))
@@ -198,14 +198,14 @@ app.get('/protected', (req, res, next) => {
     res.status(200).send('Ok. Sei loggato.\n');
 });
 
-app.post('/registration', 
+app.post('/register', 
     [
-        check(['username', 'email', 'password', 'confirmpassword'], 'The parameters must be strings').isString(),
-        check('username', 'The username must be 4-20 characters long').trim().isLength({max: 20, min: 4}),
-        check('password', 'The password must be 8-16 characters long and must contain 1 uppercase letter, 1 number and 1 special character').isLength({max: 16, min: 8}).isStrongPassword(),
-        check('email', 'A valid mail is needed').trim().isEmail(),
+        check(['username', 'email', 'password', 'confirmPassword'], 'Parametri mancanti o dal formato errato.').isString(),
+        check('username', "L'username deve essere lungo dai 4 ai 20 caratteri e può contenere solo lettere, numeri o underscore").trim().isLength({max: 20, min: 4}).matches(/[a-zA-Z0-9_]{4,20}/),
+        check('password', 'La password deve essere lunga dai 8 ai 16 caratteri e deve contenere almeno un numero, una lettera maiuscola, una lettera minuscola e un carattere speciale.').isLength({max: 16, min: 8}).isStrongPassword(),
+        check('email', 'Inserire un indirizzo mail valido').trim().isEmail(),
         check('confirmPassword').custom((value, {req}) => {
-            return value === req.body.password ? Promise.resolve('Ok.') : Promise.reject('Password mismatch.');
+            return value === req.body.password ? Promise.resolve('Ok.') : Promise.reject('La password originale e quella di conferma devono combaciare.');
         })
     ],
     (req, res) => {
@@ -220,7 +220,7 @@ app.post('/registration',
             return res.status(201).end();
         }).catch(err => {
             if(err.errno === 19 && err.code === 'SQLITE_CONSTRAINT' && err.message.match(/UNIQUE constraint failed/)) {
-                return res.status(409).json({message: 'Username or Email already in use by another account.'});
+                return res.status(409).json({message: 'Username o Email già in uso da un altro account.'});
             }
             return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
         });
@@ -267,8 +267,8 @@ function isMainCategory(category, serverCategories) {
 
 app.post('/images/upload', storeImage, isLogged,
     [
-        check('title').isLength({max: 24, min: 5}),
-        check('description').isString().isLength({max: 128}),
+        check('title', 'Il titolo deve essere lungo dai 5 ai 24 caratteri e può contenere solo lettere, numeri, underscore e spazi.').isLength({max: 24, min: 5}).matches(/[a-zA-Z0-9_\s]{5,24}/),
+        check('description', 'La descrizione deve essere lunga al massimo 128 caratteri.').isString().isLength({max: 128}),
         check('categories')
             .customSanitizer(values => {
                 // Convert single value to array
@@ -277,7 +277,7 @@ app.post('/images/upload', storeImage, isLogged,
             .custom((values, { req }) => {
                 // Check array length
                 if (!values || values.length < 1 || values.length > 3) {
-                    throw new Error('Devi selezionare da 1 a 3 categorie.');
+                    throw new Error('Selezionare da 1 a 3 categorie.');
                 }
 
                 const serverCategories = req.app.get('categories');
@@ -332,17 +332,17 @@ app.post('/images/upload', storeImage, isLogged,
         }).custom(function(values) {
             if(values.length <= 16) {
                 for(const tag of values) {
-                    if(!typeof tag === 'string') return Promise.reject('Tag is not a string.');
-                    if( !(tag.length >= 3 && tag.length <= 16) ) return Promise.reject('Invalid tag length.');
+                    if(!typeof tag === 'string') return Promise.reject('Il Tag deve essere una stringa.');
+                    if( !(tag.length >= 3 && tag.length <= 16) ) return Promise.reject('Il tag deve essere lungo 3-16 caratteri.');
                 }
                 return Promise.resolve('Ok.');
             }
-            return Promise.reject('A maximum of 16 tags is required.');
+            return Promise.reject('Superato il numero massimo di tag possibili (16).');
         }),
     ], 
     (req, res) => {
         console.log(req.body);
-        if(!req.file) return res.status(422).json({error: 'No file was uploaded'});
+        if(!req.file) return res.status(422).json({message: 'Nessun file caricato.'});
         const errors = validationResult(req);
         if(!errors.isEmpty()) {
             fs.unlinkSync(tempStorePath + req.body.originalfilename);
@@ -368,7 +368,7 @@ app.post('/images/upload', storeImage, isLogged,
             console.log('Errore nel database: ' + err);
             fs.unlinkSync(tempStorePath + req.body.originalfilename);
             if(err.errno === 19 && err.code === 'SQLITE_CONSTRAINT' && err.message.match(/UNIQUE constraint failed/)) {
-                return res.status(409).json({message: 'Title already in use.'});
+                return res.status(409).json({message: 'Titolo già in uso.'});
             }
             return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
         });
@@ -430,14 +430,14 @@ app.get('/images/search', (req, res) => {
             case 'author': options['author'] = req.query.value; break;
             case 'category': options['category'] = req.query.value; break;
             case 'tag': options['tag'] = req.query.value; break;
-            default: return res.status(422).json({error: 'Invalid search parameter.'});
+            default: return res.status(422).json({error: 'Parametro di ricerca non valido.'});
         }
         if(req.query.order) {
             switch(req.query.order) {
                 case 'date': options['order'] = 'UploadDate'; break;
                 case 'likes': options['order'] = 'Likes'; break;
                 case 'comments': options['order'] = 'Comments'; break;
-                default: return res.status(422).json({error: 'Invalid order parameter.'});
+                default: return res.status(422).json({error: 'Parametro di ordine non valido.'});
             }
         }
         imageDao.getImages(options).then(result => res.status(200).json(result)).catch(err => {
@@ -563,7 +563,7 @@ app.get('/users/me', (req, res) => {
 });
 
 app.delete('/users/:id', isLogged, (req, res, next) => {
-    if(req.user.id != req.params.id) return res.status(401).json({error: 'Not Authorized'});
+    if(req.user.id != req.params.id) return res.status(403).json({error: 'Forbidden'});
     userDao.deleteUser(req.params.id).then(id => {
         fs.rmSync(storePath.replace(':id', id), {recursive: true});
         req.logOut(function(err) {

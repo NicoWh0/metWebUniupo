@@ -70,11 +70,12 @@ function updateModals() {
             loginModal.attachEventListeners();
             const registerModal = new RegisterModal();
             modalsContainer.insertAdjacentHTML('beforeend', registerModal.render());
+            registerModal.attachEventListeners();
         }
         else {
             const uploadModal = new UploadModal();
             modalsContainer.insertAdjacentHTML('beforeend', uploadModal.render());
-            uploadModal.attachEventListeners();
+            uploadModal.attachEventListeners();  
         }
     }
 }

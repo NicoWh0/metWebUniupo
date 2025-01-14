@@ -109,13 +109,6 @@
 	background: transparent;
 	width: 0px;
 }
-/*
-#scrolling-menu-wrapper .scrolling-menu-arrow-wrapper {
-	z-index: 1;
-	user-select: none;
-	width: 10%;
-	background-color: transparent;
-}*/
 
 [class*="scrolling-item"] {
 	user-select: none;

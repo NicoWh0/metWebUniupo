@@ -58,3 +58,31 @@
 	color: #f1f1f1;
 	float: left;
 }
+
+@media only screen and (max-width: 767px) { 
+	#carousel-row {
+		height: 10rem;
+	}
+	.carousel-inner {
+		height: 10rem !important;
+	}
+	.carousel-caption.d-none.d-md-block {
+		display: flex !important;
+	}
+	.carousel-inner h2.carousel-caption-title {
+		display: inline-block !important;
+		font-size: 1.4em;
+	}
+}
+
+@media only screen and (max-width: 375px) {
+	#carousel-row {
+		height: 11rem;
+	}
+	.carousel-inner {
+		height: 11rem !important;
+	}
+	.carousel-inner h2.carousel-caption-title {
+		font-size: 1.2em;
+	}
+}

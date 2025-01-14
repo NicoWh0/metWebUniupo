@@ -87,9 +87,14 @@ class UploadModal {
     }
 
     attachEventListeners() {
+        const modal = document.getElementById('uploadImage');
         const form = document.getElementById('upload-image-form');
         const tagInput = document.getElementById('image-tags');
         const tagsContainer = document.getElementById('tags-container');
+
+        modal.addEventListener('hidden.bs.modal', () => {
+            this.clearForm();
+        });
 
         // Tag input handling
         tagInput.addEventListener('keyup', (e) => this.handleTagInput(e, tagsContainer));
@@ -301,11 +306,15 @@ class UploadModal {
         // Reset category selections
         for (let i = 1; i <= 3; i++) {
             const categoryButton = document.getElementById(`categoryDropdown${i}`);
-            const beforeCategoryButton = getComputedStyle(categoryButton, '::before');
             const selectedCategoryInput = document.getElementById(`selectedCategory${i}`);
             selectedCategoryInput.value = '';
             categoryButton.textContent = 'Seleziona una categoria'; 
-            beforeCategoryButton.style.backgroundImage = 'none';
+            categoryButton.style.setProperty('--background', 'none');
+        }
+
+        // Hide side category containers
+        for (let i = 2; i <= 3; i++) {
+            document.getElementById(`category${i}-container`).style.display = 'none';
         }
     }
 
