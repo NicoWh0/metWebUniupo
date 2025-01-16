@@ -1,81 +1,106 @@
 'use strict';
-// Get the container element
-const container = document.getElementById('scrolling-menu');
 
-const calculateWidth = () => {
-    return Math.ceil(container.scrollWidth - container.clientWidth); // Round up to avoid floating point issues
-}
+class CategoryScroller {
+    constructor() {
+        // Get the container element
+        this.container = document.getElementById('scrolling-menu');
+        this.scrollLength = this.calculateWidth();
 
-let scrollLength = calculateWidth();
+        // Get the left and right arrow elements
+        this.leftArrow = document.querySelector('.left-arrow .scrolling-arrow-button');
+        this.rightArrow = document.querySelector('.right-arrow .scrolling-arrow-button');
 
-// Get the left and right arrow elements
-const leftArrow = document.querySelector('.left-arrow .scrolling-arrow-button');
-const rightArrow = document.querySelector('.right-arrow .scrolling-arrow-button');
+        // Set the initial scroll position
+        this.scrollPosition = 0;
+        this.container.scrollTo({
+            top: 0,
+            left: this.scrollPosition,
+            behavior: 'smooth'
+        });
 
-// Calculate scroll amount based on container width
-const calculateScrollAmount = () => {
-    // Get the visible width of the container
-    const visibleWidth = container.clientWidth;
-    // Scroll 80% of the visible width
-    return Math.floor(visibleWidth * 0.8);
-};
+        // Bind methods
+        this.checkScroll = this.checkScroll.bind(this);
+        this.handleLeftClick = this.handleLeftClick.bind(this);
+        this.handleRightClick = this.handleRightClick.bind(this);
 
-function checkScroll() {
-    scrollLength = calculateWidth();
-    const currentScroll = container.scrollLeft;
-    
-    if (currentScroll === 0) {
-        leftArrow.setAttribute("disabled", "true");
-        rightArrow.removeAttribute("disabled");
-    } else if (Math.abs(currentScroll - scrollLength) < 1) {
-        rightArrow.setAttribute("disabled", "true");
-        leftArrow.removeAttribute("disabled");
-    } else {
-        leftArrow.removeAttribute("disabled");
-        rightArrow.removeAttribute("disabled");
+        // Initialize
+        this.attachEventListeners();
+        this.checkScroll();
+    }
+
+    calculateWidth() {
+        return Math.ceil(this.container.scrollWidth - this.container.clientWidth);
+    }
+
+    calculateScrollAmount() {
+        const visibleWidth = this.container.clientWidth;
+        return Math.floor(visibleWidth * 0.8);
+    }
+
+    checkScroll() {
+        this.scrollLength = this.calculateWidth();
+        const currentScroll = this.container.scrollLeft;
+        
+        if (currentScroll === 0) {
+            this.leftArrow.setAttribute("disabled", "true");
+            this.rightArrow.removeAttribute("disabled");
+        } else if (Math.abs(currentScroll - this.scrollLength) < 1) {
+            this.rightArrow.setAttribute("disabled", "true");
+            this.leftArrow.removeAttribute("disabled");
+        } else {
+            this.leftArrow.removeAttribute("disabled");
+            this.rightArrow.removeAttribute("disabled");
+        }
+    }
+
+    handleLeftClick() {
+        const scrollAmount = this.calculateScrollAmount();
+        if(this.scrollPosition - scrollAmount >= 0) {
+            this.scrollPosition -= scrollAmount;
+        } else {
+            this.scrollPosition = 0;
+        }
+        this.container.scrollTo({
+            top: 0,
+            left: this.scrollPosition,
+            behavior: 'smooth'
+        });
+        this.checkScroll();
+    }
+
+    handleRightClick() {
+        const scrollAmount = this.calculateScrollAmount();
+        if(this.scrollPosition + scrollAmount <= this.scrollLength) {
+            this.scrollPosition += scrollAmount;
+        } else {
+            this.scrollPosition = this.scrollLength;
+        }
+        this.container.scrollTo({
+            top: 0,
+            left: this.scrollPosition,
+            behavior: 'smooth'
+        });
+        this.checkScroll();
+    }
+
+    attachEventListeners() {
+        this.container.addEventListener("scroll", this.checkScroll);
+        window.addEventListener("resize", this.checkScroll);
+        this.leftArrow.addEventListener('click', this.handleLeftClick);
+        this.rightArrow.addEventListener('click', this.handleRightClick);
+    }
+
+    detachEventListeners() {
+        this.container.removeEventListener("scroll", this.checkScroll);
+        window.removeEventListener("resize", this.checkScroll);
+        this.leftArrow.removeEventListener('click', this.handleLeftClick);
+        this.rightArrow.removeEventListener('click', this.handleRightClick);
     }
 }
 
-container.addEventListener("scroll", checkScroll);
-window.addEventListener("resize", checkScroll);
-checkScroll();
+// Export a function that creates and returns a new instance
+function initializeCategoryScroller() {
+    return new CategoryScroller();
+}
 
-// Set the initial scroll position
-let scrollPosition = 0;
-container.scrollTo({
-    top: 0,
-    left: scrollPosition,
-    behavior: 'smooth'
-});
-
-// Add event listener to the left arrow
-leftArrow.addEventListener('click', () => {
-    const scrollAmount = calculateScrollAmount();
-    if(scrollPosition - scrollAmount >= 0) {
-        scrollPosition -= scrollAmount;
-    } else {
-        scrollPosition = 0;
-    }
-    container.scrollTo({
-        top: 0,
-        left: scrollPosition,
-        behavior: 'smooth'
-    });
-    checkScroll();
-});
-
-// Add event listener to the right arrow
-rightArrow.addEventListener('click', () => {
-    const scrollAmount = calculateScrollAmount();
-    if(scrollPosition + scrollAmount <= scrollLength) {
-        scrollPosition += scrollAmount;
-    } else {
-        scrollPosition = scrollLength;
-    }
-    container.scrollTo({
-        top: 0,
-        left: scrollPosition,
-        behavior: 'smooth'
-    });
-    checkScroll();
-});
+export { initializeCategoryScroller };

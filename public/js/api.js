@@ -78,13 +78,13 @@ class API {
         }
     }
 
-    static async searchImages(query) {
+    static async searchImages(value, param = '', order = '') {
         try {
-            const response = await fetch(`/api/images/search?q=${encodeURIComponent(query)}`, { 
+            const response = await fetch(`/images/search?value=${value}&param=${param}&order=${order}`, { 
                 headers: this.headers 
             });
             const data = await response.json();
-            return data.images;
+            return data;
         } catch (error) {
             console.error('Error searching images:', error);
             return [];

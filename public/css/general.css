@@ -30,6 +30,10 @@ body {
 	line-height: 1;
 }
 
+main {
+	min-height: 100vh;
+}
+
 ol, ul {
 	list-style: none;
 }

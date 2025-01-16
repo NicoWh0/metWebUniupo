@@ -6,7 +6,7 @@ import API from './api.js';
 import LoginModal from './templates/modals/login_modal.js';
 import RegisterModal from './templates/modals/register_modal.js';
 import UploadModal from './templates/modals/upload_modal.js';
-import LoadingScreen from './templates/others/loading_screen.js';
+import SearchPage from './views/search_page.js';
 
 // App state management
 const appState = {
@@ -21,20 +21,34 @@ const appState = {
 // Event bus for auth state changes
 const authEvents = new EventTarget();
 
-LoadingScreen.show();
-
 // Initialize views
 const homeView = new HomeView();
 
 // Route handlers
 const renderHome = async () => {
     document.title = 'GroundArt - Home';
-    await homeView.render();
+    await homeView.mount();
 };
 
 // Define routes
 page('/', '/home');
 page('/home', renderHome);
+page('/search', async (ctx) => {
+    //query is like this: ?value=searchTerm&searchBy=filterValue&sort=sortValue
+    const query = ctx.querystring;
+    const searchTerm = query.split('&')[0]?.split('=')[1];
+    const searchBy = query.split('&')[1]?.split('=')[1];
+    const sortValue = query.split('&')[2]?.split('=')[1];
+
+    const searchPage = new SearchPage(
+        "Risultati della ricerca", // Title
+        "0 risultati trovati",     // Counter (will be updated with actual results),
+        searchTerm ?? '',
+        searchBy ?? 'all',
+        sortValue ?? ''
+    );
+    await searchPage.mount();
+});
 
 // Update auth state and notify components
 async function updateAuthState() {

@@ -6,6 +6,7 @@ import SearchGallery from '../templates/search/search_gallery.js';
 import LoadingScreen from '../templates/others/loading_screen.js';
 import { appState } from '../app.js';
 import API from '../api.js';
+import { initializeCategoryScroller } from '../scripts/categories_scrolling.js';
 
 export class HomeView {
     constructor() {
@@ -18,13 +19,21 @@ export class HomeView {
         this.scrollingMenu = null;
         this.exploreTitleRow = null;
         this.searchGallery = null;
+        this.categoryScroller = null;
     }
 
-    async render() {
+    async mount() {
+        await this.#render();
 
+        // Initialize the category scroller
+        this.categoryScroller = initializeCategoryScroller();
+    }
+
+    async #render() {
+        LoadingScreen.show();
         try {
             // Start loading data immediately
-            await this.loadData();
+            await this.#loadData();
 
             // Render initial layout with loading states
             document.getElementById('content').innerHTML = `
@@ -39,7 +48,7 @@ export class HomeView {
                 </div>
             `;
 
-            await this.updateComponents();
+            await this.#updateComponents();
 
         } catch (error) {
             console.error('Error rendering home page:', error);
@@ -57,7 +66,7 @@ export class HomeView {
         }
     }
 
-    async loadData() {
+    async #loadData() {
         try {
             // Use categories from appState
             const mainCategoryNames = appState.mainCategories.map(cat => cat.name);
@@ -82,14 +91,14 @@ export class HomeView {
             console.log(tags)
             this.exploreTitleRow = new ExploreTitleRow(tags);
             const images = await API.getRandomImages();
-            this.searchGallery = new SearchGallery(images);
+            this.searchGallery = new SearchGallery(images, true);
 
         } catch (error) {
             console.error('Error loading home page data:', error);
         }
     }
 
-    async updateComponents() {
+    async #updateComponents() {
         // Update carousel
         const carouselContainer = document.getElementById('carousel-row');
         if (carouselContainer && this.carousel) {
@@ -111,20 +120,14 @@ export class HomeView {
         }
 
         // Initialize components after rendering
-        await this.initializeComponents();
+        await this.#initializeComponents();
     }
 
-    async initializeComponents() {
+    async #initializeComponents() {
         // Initialize Bootstrap carousel
         const carouselElement = document.getElementById('carouselTop');
         if (carouselElement) {
             new window.bootstrap.Carousel(carouselElement);
         }
-
-        // Load and execute the categories scrolling script
-        const script = document.createElement('script');
-        script.src = '/js/scripts/categories_scrolling.js';
-        script.type = 'text/javascript';
-        document.body.appendChild(script);
     }
 }

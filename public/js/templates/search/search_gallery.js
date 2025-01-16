@@ -3,22 +3,37 @@
 class SearchGallery {
 
 
-    constructor(images) {
+    constructor(images, standard_background = false) {
         this.images = images;
+        this.standard_background = standard_background;
     }
-
 
     render() {
         return `
-            <div id="search-result-gallery-container" class="container-fluid justify-content-center d-flex standard-background">
+            <div id="search-result-gallery-container" class="container-fluid justify-content-center d-flex ${this.standard_background ? 'standard-background' : ''}">
                 <div id="search-result-gallery" class="w-100 h-100 d-flex flex-row justify-content-start flex-wrap">
-                    ${this.images.map(image => this.renderImage(image)).join('')}
+                    ${!this.images || this.images.length === 0 ? 
+                        this.#renderEmptyState() : 
+                        this.images.map(image => this.#renderImage(image)).join('')
+                    }
                 </div>
             </div>     
         `
     }
 
-    renderImage(image) {
+    #renderEmptyState() {
+        return `
+            <div class="col-12 text-center mt-5">
+                <svg class="search-placeholder-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+                <h3>Nessun risultato trovato</h3>
+                <p class="text-muted">Prova a modificare i filtri di ricerca</p>
+            </div>
+        `;
+    }
+
+    #renderImage(image) {
         return `
             <a class="image-anchor search-result-anchor" href="#">
                 <div class="search-result-wrapper light-grey-border">
@@ -38,6 +53,35 @@ class SearchGallery {
                 </div>
             </a>
         `
+    }
+
+    #reRender() {
+        const galleryElement = document.getElementById('search-result-gallery');
+        if (galleryElement) {
+            galleryElement.innerHTML = this.images.length === 0 ? 
+                this.#renderEmptyState() : 
+                this.images.map(image => this.#renderImage(image)).join('');
+        }
+    }
+
+    updateResults(newResults) {
+        this.images = newResults;
+        this.#reRender();
+    }
+
+    showPlaceholder(title, message) {
+        const galleryElement = document.getElementById('search-result-gallery');
+        if (galleryElement) {
+            galleryElement.innerHTML = `
+                <div class="col-12 text-center mt-5">
+                    <svg class="search-placeholder-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                    <h3>${title}</h3>
+                    <p class="text-muted">${message}</p>
+                </div>
+            `;
+        }
     }
 }
 
