@@ -210,11 +210,14 @@
 }
 
 #hashtag-menu .hashtag-item {
-	cursor: pointer;
 	background-color: #575757;
 	color: #fff2e6;
 	font-weight: bold;
 	font-style: oblique;
+}
+
+#hashtag-menu .hashtag-item a {
+	cursor: pointer;
 }
 
 #hashtag-menu .hashtag-item:hover {

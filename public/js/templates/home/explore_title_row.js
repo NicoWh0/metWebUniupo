@@ -24,7 +24,7 @@ class ExploreTitleRow {
 
     renderTag(tag) {
         return `
-            <li class="dropdown-item hashtag-item"><a href="#">#${tag.TagName}</a></li>
+            <li class="dropdown-item hashtag-item"><a class="w-100 d-block" href="/search?value=${tag.TagName}&searchBy=tag">#${tag.TagName}</a></li>
         `
     }
 }

@@ -70,7 +70,6 @@ class API {
         try {
             const response = await fetch('/images/search', { headers: this.headers });
             const data = await response.json();
-            console.log(data);
             return data;
         } catch (error) {
             console.error('Error fetching random images: ', error);

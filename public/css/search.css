@@ -222,7 +222,7 @@
 	}
 }
 
-@media only screen and (max-width: 300px) {
+@media only screen and (max-width: 310px) {
 	#search-header #search-buttons .search-filter-button {
 		font-size: .7em;
 		width: 8rem;

@@ -88,7 +88,6 @@ export class HomeView {
             this.carousel = new Carousel(this.mainCategories);
             this.scrollingMenu = new ScrollingMenu(this.sideCategories);
             const tags = await API.getMostUsedTags();
-            console.log(tags)
             this.exploreTitleRow = new ExploreTitleRow(tags);
             const images = await API.getRandomImages();
             this.searchGallery = new SearchGallery(images, true);

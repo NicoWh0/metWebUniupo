@@ -20,14 +20,18 @@ class SearchPage {
             orderBy: orderBy
         };
 
+        // Validate initial parameters
+        this.#validateSearchByParams();
+        this.#validateOrderByParams();
+
         this.searchHeader = new SearchHeader(
             search_info_title, 
             search_info_counter, 
-            initialSearchValue
+            this.searchParams.searchTerm,
+            this.searchParams.searchBy,
+            this.searchParams.orderBy
         );
         this.searchGallery = new SearchGallery();
-        this.#validateSearchByParams();
-        this.#validateOrderByParams();
 
         // Bind handlers
         this.handleSearch = this.handleSearch.bind(this);
@@ -52,7 +56,6 @@ class SearchPage {
     }
 
     async handleSearch(event) {
-        console.log("Search page: handleSearch");
         this.searchParams.searchTerm = event.detail.searchTerm;
         await this.performSearch();
     }
@@ -70,7 +73,6 @@ class SearchPage {
     }
 
     async performSearch() {
-        console.log("Search page: performSearch");
         try {
             // If searchTerm is empty, show placeholder message instead of making API call
             if (!this.searchParams.searchTerm) {
@@ -98,7 +100,7 @@ class SearchPage {
 
             // Update results count
             document.getElementById('search-info-counter').textContent = 
-                `${results.length} risultati trovati`;
+                `${results.length} risultat${results.length === 1 ? 'o' : 'i'} trovat${results.length === 1 ? 'o' : 'i'}`;
 
             // Update gallery
             this.searchGallery.updateResults(results);

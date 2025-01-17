@@ -43,11 +43,11 @@ class ImageDao {
         });
     }
 
-    getRandomImages() {
+    getRandomImages(limit = 30) {
         return new Promise((resolve, reject) => {
             const sql = `SELECT i.Title, i.Description, i.UploadDate, i.ImagePath, i.Author AS AuthorId, u.Username AS AuthorName, u.UserImage AS AuthorImage
-            FROM Image i JOIN User u ON u.Id = i.Author ORDER BY RANDOM() LIMIT 30`;
-            db.all(sql, function(err, rows) {
+            FROM Image i JOIN User u ON u.Id = i.Author ORDER BY RANDOM() LIMIT ?`;
+            db.all(sql, [limit], function(err, rows) {
                 if(err) reject(err);
                 else resolve(rows);
             });
@@ -261,7 +261,9 @@ class ImageDao {
             }
             else sql += ` ORDER BY Likes + Comments DESC`;
             
-            sql += ` LIMIT 100`;
+            if(options.limit) sql += ` LIMIT ${options.limit}`;
+            else sql += ` LIMIT 100`;
+
             console.log(sql);
 
             db.all(sql, input, function(err, rows) {

@@ -35,7 +35,7 @@ class ScrollingMenu {
     renderScrollMenuItem(category) {
         return `
             <ul class="list-group-item scrolling-item d-flex align-items-center">
-                <a class="scrolling-anchor d-flex flex-row align-items-center" href="search.html?category=${category.name}">
+                <a class="scrolling-anchor d-flex flex-row align-items-center" href="/search?value=${category.name}&searchBy=category">
                     <img class="scrolling-img" src="${category.iconPath}" alt="${category.name}">
                     <div class="d-flex justify-content-between">
                         <h3 class="scrolling-text">${category.name}</h3>

@@ -467,6 +467,17 @@
     color: #cfcfcf !important;
 }
 
+#upload-image-form textarea {
+    height: 5.5rem;
+}
+
+#upload-image-button:disabled, #upload-image-button:disabled:hover, #upload-image-button:disabled:active {
+    background-color: #a8a8a8;
+    border-color: #a8a8a8;
+    cursor: not-allowed;
+    pointer-events: auto;
+}
+
 
 /* Header Media Query */
 
@@ -480,6 +491,10 @@
     #logo {
         margin-left: 0 !important;
         margin-right: 2.8rem !important;
+    }
+    #logo.no-margin-right.margin-left {
+        margin-left: 2.8rem !important;
+        margin-right: 0 !important;
     }
     .offcanvas {
         display: flex !important;

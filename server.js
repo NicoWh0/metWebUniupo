@@ -267,7 +267,7 @@ function isMainCategory(category, serverCategories) {
 
 app.post('/images/upload', storeImage, isLogged,
     [
-        check('title', 'Il titolo deve essere lungo dai 5 ai 24 caratteri e può contenere solo lettere, numeri, underscore e spazi.').isLength({max: 24, min: 5}).matches(/[a-zA-Z0-9_\s]{5,24}/),
+        check('title', 'Il titolo deve essere lungo dai 5 ai 20 caratteri e può contenere solo lettere, numeri, underscore e spazi.').isLength({max: 20, min: 5}).matches(/[a-zA-Z0-9_\s]{5,20}/),
         check('description', 'La descrizione deve essere lunga al massimo 128 caratteri.').isString().isLength({max: 128}),
         check('categories')
             .customSanitizer(values => {
@@ -332,8 +332,9 @@ app.post('/images/upload', storeImage, isLogged,
         }).custom(function(values) {
             if(values.length <= 16) {
                 for(const tag of values) {
-                    if(!typeof tag === 'string') return Promise.reject('Il Tag deve essere una stringa.');
-                    if( !(tag.length >= 3 && tag.length <= 16) ) return Promise.reject('Il tag deve essere lungo 3-16 caratteri.');
+                        if(!typeof tag === 'string') return Promise.reject('Il tag deve essere una stringa.');
+                        if(!(tag.length >= 3 && tag.length <= 16) ) return Promise.reject('Il tag deve essere lungo 3-16 caratteri.');
+                        if(!tag.match(/^[a-zA-Z0-9_]+$/)) return Promise.reject('Il tag deve contenere solo lettere, numeri e underscore.');
                 }
                 return Promise.resolve('Ok.');
             }
@@ -439,6 +440,10 @@ app.get('/images/search', (req, res) => {
                 case 'comments': options['order'] = 'Comments'; break;
                 default: return res.status(422).json({error: 'Parametro di ordine non valido.'});
             }
+        }
+        if(req.query.limit) {
+            if(isNaN(req.query.limit)) return res.status(422).json({error: 'Limite non valido.'});
+            options['limit'] = req.query.limit;
         }
         imageDao.getImages(options).then(result => res.status(200).json(result)).catch(err => {
             return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});

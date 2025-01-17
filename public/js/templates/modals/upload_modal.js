@@ -20,15 +20,18 @@ class UploadModal {
                         <div class="modal-body">
                             <form id="upload-image-form">
                                 <div class="form-group mb-3">
-                                    <label for="image-title" class="col-form-label">Titolo*:</label>
-                                    <input type="text" class="form-control" id="image-title" required>
+                                    <label for="image-title" class="col-form-label">Titolo<span class="text-danger">*</span>:</label>
+                                    <input type="text" class="form-control" id="image-title" maxlength="20" minlength="5" pattern="[a-zA-Z0-9_\s]{5,20}" required>
+                                    <div class="form-text" style="color: #808080;">
+                                        Il titolo deve essere lungo dai 5 ai 20 caratteri e può contenere solo lettere, numeri, underscore e spazi.
+                                    </div>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="image-description" class="col-form-label">Descrizione:</label>
-                                    <textarea class="form-control" id="image-description"></textarea>
+                                    <textarea class="form-control" id="image-description" maxlength="128"></textarea>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="image-category" class="col-form-label">Categoria 1 (obbligatoria):</label>
+                                    <label for="image-category" class="col-form-label">Categoria 1 (obbligatoria)<span class="text-danger">*</span>:</label>
                                     <div class="dropdown">
                                         <button class="btn btn-secondary dropdown-toggle w-100 text-center category-dropdown" type="button" id="categoryDropdown1" data-bs-toggle="dropdown" aria-expanded="false">
                                             Seleziona una categoria
@@ -66,19 +69,22 @@ class UploadModal {
                                     </div>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="image-file" class="col-form-label">Seleziona immagine:</label>
-                                    <input type="file" class="form-control" id="image-file" accept="image/*" required>
+                                    <label for="image-file" class="col-form-label">Seleziona immagine<span class="text-danger">*</span>:</label>
+                                    <input type="file" class="form-control" id="image-file" accept="image/png, image/jpeg" required>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="image-tags" class="col-form-label">Tags (max 16):</label>
-                                    <input type="text" class="form-control" id="image-tags" placeholder="Aggiungi un tag e premi Enter">
+                                    <input type="text" class="form-control" id="image-tags" placeholder="Aggiungi un tag e premi Invio" maxlength="16" minlength="3" pattern="[a-zA-Z0-9_]{3,16}">
+                                    <div class="form-text" style="color: #808080;">
+                                        Il tag deve essere lungo dai 3 ai 16 caratteri e può contenere solo lettere, numeri e underscore.
+                                    </div>
                                     <div id="tags-container" class="mt-2"></div>
                                 </div>
                             </form>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                            <button type="submit" form="upload-image-form" class="btn btn-primary submit-button">Pubblica</button>
+                            <button id="upload-image-button" type="submit" form="upload-image-form" class="btn btn-primary submit-button" disabled>Pubblica</button>
                         </div>
                     </div>
                 </div>
@@ -89,8 +95,10 @@ class UploadModal {
     attachEventListeners() {
         const modal = document.getElementById('uploadImage');
         const form = document.getElementById('upload-image-form');
+        const titleInput = document.getElementById('image-title');
         const tagInput = document.getElementById('image-tags');
         const tagsContainer = document.getElementById('tags-container');
+        const imageFile = document.getElementById('image-file');
 
         modal.addEventListener('hidden.bs.modal', () => {
             this.clearForm();
@@ -99,8 +107,21 @@ class UploadModal {
         // Tag input handling
         tagInput.addEventListener('keyup', (e) => this.handleTagInput(e, tagsContainer));
 
+        
+
         // Category selection handling
         this.setupCategorySelectors();
+
+        const disableSubmitButton = () => {
+            const submitButton = document.getElementById('upload-image-button');
+            submitButton.disabled = !form.checkValidity() || document.getElementById('selectedCategory1').value === '';
+        }
+
+        //Enable submit button only if all fields are valid
+        modal.addEventListener('shown.bs.modal', disableSubmitButton);
+        form.addEventListener('categoryChange', disableSubmitButton);
+        titleInput.addEventListener('input', disableSubmitButton);
+        imageFile.addEventListener('change', disableSubmitButton);
 
         // Form submission
         form.addEventListener('submit', (e) => this.handleSubmit(e));
@@ -117,10 +138,13 @@ class UploadModal {
     handleTagInput(e, tagsContainer) {
         if (e.key === 'Enter') {
             e.preventDefault();
+
             const tag = e.target.value.trim();
-            if (tag && this.tags.length < 16 && !this.tags.includes(tag)) {
-                this.addTag(tag, tagsContainer);
-                e.target.value = '';
+            if(tag.match(/^[a-zA-Z0-9_]{3,16}$/)) {
+                if (tag && this.tags.length < 16 && !this.tags.includes(tag)) {
+                    this.addTag(tag.toLowerCase(), tagsContainer);
+                    e.target.value = '';
+                }
             }
         }
     }
@@ -166,6 +190,12 @@ class UploadModal {
             menu.addEventListener('click', (e) => {
                 if (e.target.classList.contains('category-option')) {
                     this.handleCategorySelection(e, parseInt(level), buttons, inputs, menus);
+                    document.dispatchEvent(new CustomEvent('categoryChange', { 
+                        detail: { 
+                            level: parseInt(level),
+                            value: e.target.getAttribute('data-value')
+                        } 
+                    }));
                 }
             });
         });
@@ -239,6 +269,7 @@ class UploadModal {
 
     async handleSubmit(e) {
         e.preventDefault();
+
         const imageFile = document.getElementById('image-file').files[0];
         const title = document.getElementById('image-title').value;
         const description = document.getElementById('image-description').value;

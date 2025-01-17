@@ -40,7 +40,7 @@ class Carousel {
     renderCarouselItem(category, isActive) {
         return `
             <div class="carousel-item ${isActive ? 'active' : ''}">
-                <a class="carousel-img-container" href="/search?category=${encodeURIComponent(category.name)}">
+                <a class="carousel-img-container" href="/search?value=${category.name}&searchBy=category">
                     <img src="${category.iconPath}" class="d-block w-100" alt="${category.name}">
                 </a>
                 <div class="carousel-caption d-none d-md-block">

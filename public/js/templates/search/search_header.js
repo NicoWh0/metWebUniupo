@@ -3,15 +3,37 @@
 
 class SearchHeader {
 
-    constructor(search_info_title, search_info_counter, initialSearchValue = '') {
+    constructor(search_info_title, search_info_counter, initialSearchValue = '', initialSearchBy = 'all', initialOrderBy = '') {
         this.search_info_title = search_info_title;
         this.search_info_counter = search_info_counter;
         this.initialSearchValue = initialSearchValue;
+        this.initialSearchBy = initialSearchBy;
+        this.initialOrderBy = initialOrderBy;
         this.debounceTimeout = null;
     }
 
 
     render() {
+        // Helper function to get the display text for filter values
+        const getFilterText = (type, value) => {
+            const filterMappings = {
+                searchBy: {
+                    'all': 'Nessuna preferenza',
+                    'title': 'Titolo',
+                    'category': 'Categoria',
+                    'author': 'Nome artista',
+                    'tag': 'Tag'
+                },
+                orderBy: {
+                    '': 'Nessuna preferenza',
+                    'likes': 'Numero di like',
+                    'comments': 'Numero di commenti',
+                    'date': 'Più recenti'
+                }
+            };
+            return filterMappings[type][value] || 'Nessuna preferenza';
+        };
+
         return `
             <div id="search-header" class="row d-flex flex-row align-items-center justify-content-start">
                 <div id="search-info-box" class="d-flex flex-column justify-content-around h-75">
@@ -24,8 +46,9 @@ class SearchHeader {
                                class="form-control search-input" 
                                id="search-bar"
                                placeholder="Cerca immagini..."
-                               aria-label="Search"
-                        >
+                               value="${this.initialSearchValue}"
+                               aria-label="Search">
+                        <i class="bi bi-search search-icon"></i>
                     </div>
                 </div>
                 <div id="search-buttons" class="d-flex align-items-center gap-4 h-50">
@@ -37,7 +60,7 @@ class SearchHeader {
                                     role="button" 
                                     data-bs-toggle="dropdown" 
                                     aria-expanded="false">
-                                Nessuna preferenza
+                                ${getFilterText('orderBy', this.initialOrderBy)}
                             </button>
                             <ul class="dropdown-menu">
                                 <li class="dropdown-item search-option" value="">Nessuna preferenza</li>
@@ -55,7 +78,7 @@ class SearchHeader {
                                     role="button" 
                                     data-bs-toggle="dropdown" 
                                     aria-expanded="false">
-                                Nessuna preferenza
+                                ${getFilterText('searchBy', this.initialSearchBy)}
                             </button>
                             <ul class="dropdown-menu">
                                 <li class="dropdown-item search-option" value="all">Nessuna preferenza</li>
