@@ -235,6 +235,17 @@
 	text-decoration: none;
 }
 
+/* --- Title Row Media Queries --- */
+
+@media only screen and (max-width: 768px) {
+    #title-row-title {
+        font-size: 1.6em !important;
+    }
+	#hashtag-button {
+		font-size: 0.8em !important;
+	}
+}
+
 /* --- Hashtag Menu Media Queries --- */
 
 @media only screen and (max-width: 1760px) {

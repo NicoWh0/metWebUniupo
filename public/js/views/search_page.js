@@ -33,7 +33,7 @@ class SearchPage {
         );
         this.searchGallery = new SearchGallery();
 
-        // Bind handlers
+        //Bind event listeners
         this.handleSearch = this.handleSearch.bind(this);
         this.handleFilterChange = this.handleFilterChange.bind(this);
     }
@@ -42,7 +42,7 @@ class SearchPage {
         LoadingScreen.show();
 
         const mainContent = document.querySelector('#content');
-        mainContent.innerHTML = this.render();
+        mainContent.innerHTML = this.#render();
 
         // Attach event listeners
         document.addEventListener('search', this.handleSearch);
@@ -50,18 +50,17 @@ class SearchPage {
         this.searchHeader.attachEventListeners();
 
         // Initial search
-        await this.performSearch();
+        await this.#performSearch();
         
         LoadingScreen.hide();
     }
 
     async handleSearch(event) {
         this.searchParams.searchTerm = event.detail.searchTerm;
-        await this.performSearch();
+        await this.#performSearch();
     }
 
     async handleFilterChange(event) {
-        console.log("Search page: handleFilterChange");
         const { type, value } = event.detail;
         console.log(type, value);
         if (type === 'sort') {
@@ -69,10 +68,10 @@ class SearchPage {
         } else if (type === 'filter') {
             this.searchParams.searchBy = value && value !== 'none' ? value : 'all';
         }
-        await this.performSearch();
+        await this.#performSearch();
     }
 
-    async performSearch() {
+    async #performSearch() {
         try {
             // If searchTerm is empty, show placeholder message instead of making API call
             if (!this.searchParams.searchTerm) {
@@ -112,7 +111,7 @@ class SearchPage {
         }
     }
 
-    render() {
+    #render() {
         return `
             <div class="container-fluid">
                 ${this.searchHeader.render()}

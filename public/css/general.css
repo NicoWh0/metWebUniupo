@@ -146,3 +146,53 @@ h6 {
     opacity: 0;
     animation: fadeIn 0.5s ease-in forwards;
 }
+
+/* Not found page */
+
+#not-found-container {
+    height: 100vh;
+	text-align: center;
+}
+
+#not-found-container h1 {
+    font-size: 2em;
+	margin-bottom: 1rem;
+}
+
+#not-found-container p {
+    font-size: 1.2em;
+	margin-bottom: 1.5rem;
+}
+
+#not-found-container a {
+    font-size: 1.2em;
+	font-style: italic;
+	text-decoration: underline !important;
+	color: #e6e6e6;
+	text-decoration: none;
+	transition: color 0.3s ease;
+}
+
+#not-found-container a:hover {
+    color: #e29911;
+}
+
+@media (max-width: 768px) {
+    #not-found-container h1 {
+        font-size: 1.5em;
+    }
+
+    #not-found-container p {
+        font-size: 1em;
+    }
+
+    #not-found-container a {
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 300px) {
+    #not-found-container h1 {
+        font-size: 1.2em;
+    }
+}

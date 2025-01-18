@@ -10,7 +10,7 @@ class UploadModal {
 
     render() {
         return `
-            <div class="modal fade" id="uploadImage" tabindex="-1" aria-labelledby="uploadImageLabel" aria-hidden="true">
+            <div class="modal fade" id="uploadImage" tabindex="-1" aria-labelledby="uploadImageLabel">
                 <div class="modal-dialog">
                     <div class="modal-content standard-background">
                         <div class="modal-header">

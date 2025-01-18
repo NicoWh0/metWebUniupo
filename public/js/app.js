@@ -7,6 +7,8 @@ import LoginModal from './templates/modals/login_modal.js';
 import RegisterModal from './templates/modals/register_modal.js';
 import UploadModal from './templates/modals/upload_modal.js';
 import SearchPage from './views/search_page.js';
+import NotFound from './templates/others/not_found.js';
+import ImagePage from './views/image_page.js';
 
 // App state management
 const appState = {
@@ -35,6 +37,7 @@ page('/', '/home');
 page('/home', renderHome);
 page('/search', async (ctx) => {
     //query is like this: ?value=searchTerm&searchBy=filterValue&sort=sortValue
+    document.title = 'GroundArt - Search';
     const query = ctx.querystring;
     const searchTerm = query.split('&')[0]?.split('=')[1];
     const searchBy = query.split('&')[1]?.split('=')[1];
@@ -47,7 +50,22 @@ page('/search', async (ctx) => {
         searchBy ?? 'all',
         sortValue ?? ''
     );
+
     await searchPage.mount();
+});
+
+page('/image/:id', async (ctx) => {
+    console.log(ctx);
+    const imagePage = new ImagePage();
+    document.title = 'GroundArt - Image';
+    await imagePage.mount(ctx.params.id);
+});
+
+page('*', () => {
+    const notFound = new NotFound();
+    document.title = 'GroundArt - Page not found';
+    const content = document.getElementById('content');
+    content.innerHTML = notFound.render();
 });
 
 // Update auth state and notify components

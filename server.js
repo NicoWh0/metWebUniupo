@@ -107,6 +107,7 @@ app.use(express.static('public'));
 imageDao.getAllCategories().then(result => app.set('categories', result)).catch(err => {throw err});
 
 
+
 //REST API
 
 app.get('/imageFile/:userId/:type/:filename', (req, res) => {
