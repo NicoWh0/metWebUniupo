@@ -25,9 +25,9 @@ class CommentDao {
         });
     }
 
-    getComments(imageId) {
+    getCommentsByImageId(imageId) {
         return new Promise((resolve, reject) => {
-            const sql = "SELECT * FROM Comment WHERE ImageId = ?";
+            const sql = "SELECT Comment.Id, Comment.Content, Comment.UploadDate, User.Username FROM Comment JOIN User ON Comment.UserId = User.Id WHERE Comment.ImageId = ?";
             db.all(sql, [imageId], function(err, rows) {
                 if(err) reject(err);
                 else resolve(rows);

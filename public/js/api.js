@@ -90,6 +90,81 @@ class API {
         }
     }
 
+    static async getImageById(id) {
+        try {
+            const response = await fetch(`/images/${id}`, { headers: this.headers });
+            if(!response.ok) {
+                if(response.status === 404) {
+                    throw new Error('Image not found', { cause: response.status });
+                }
+                else {
+                    throw new Error('Error fetching image by id', { cause: response.status });
+                }
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching image by id:', error);
+            throw error;
+        }
+    }
+
+    static async editImage(id, data) {
+        try {
+            const response = await fetch(`/images/${id}`, {
+                method: 'PUT',
+                headers: this.headers,
+                body: JSON.stringify(data)
+            });
+            if(!response.ok) {
+                throw new Error('Error editing image', { cause: response.status });
+            }
+            return response;
+        } catch (error) {
+            console.error('Error editing image:', error);
+            throw error;
+        }
+    }
+
+    static async getTagsByImageId(id) {
+        try {
+            const response = await fetch(`/images/${id}/tags`, { headers: this.headers });
+            if(!response.ok) {
+                throw new Error('Error fetching tags by image id', { cause: response.status });
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching tags by image id:', error);
+            throw error;
+        }
+    }
+
+    static async getCategoriesByImageId(id) {
+        try {
+            const response = await fetch(`/images/${id}/categories`, { headers: this.headers });
+            if(!response.ok) {
+                throw new Error('Error fetching categories by image id', { cause: response.status });
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching categories by image id:', error);
+            throw error;
+        }
+    }
+
+    static async getCommentsByImageId(id) {
+        try {
+            const response = await fetch(`/images/${id}/comments`, { headers: this.headers });
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.error('Error fetching comments by image id:', error);
+            return null;
+        }
+    }
+
     static async register(user) {
         try {
             const response = await fetch('/register', {

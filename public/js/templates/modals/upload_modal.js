@@ -21,9 +21,9 @@ class UploadModal {
                             <form id="upload-image-form">
                                 <div class="form-group mb-3">
                                     <label for="image-title" class="col-form-label">Titolo<span class="text-danger">*</span>:</label>
-                                    <input type="text" class="form-control" id="image-title" maxlength="20" minlength="5" pattern="[a-zA-Z0-9_\s]{5,20}" required>
+                                    <input type="text" class="form-control" id="image-title" maxlength="24" minlength="5" pattern="[a-zA-Z0-9_ ]{5,24}" required>
                                     <div class="form-text" style="color: #808080;">
-                                        Il titolo deve essere lungo dai 5 ai 20 caratteri e può contenere solo lettere, numeri, underscore e spazi.
+                                        Il titolo deve essere lungo dai 5 ai 24 caratteri e può contenere solo lettere, numeri, underscore e spazi.
                                     </div>
                                 </div>
                                 <div class="form-group mb-3">
@@ -31,7 +31,7 @@ class UploadModal {
                                     <textarea class="form-control" id="image-description" maxlength="128"></textarea>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="image-category" class="col-form-label">Categoria 1 (obbligatoria)<span class="text-danger">*</span>:</label>
+                                    <label for="categoryDropdown1" class="col-form-label">Categoria 1 (obbligatoria)<span class="text-danger">*</span>:</label>
                                     <div class="dropdown">
                                         <button class="btn btn-secondary dropdown-toggle w-100 text-center category-dropdown" type="button" id="categoryDropdown1" data-bs-toggle="dropdown" aria-expanded="false">
                                             Seleziona una categoria
@@ -43,7 +43,7 @@ class UploadModal {
                                     </div>
                                 </div>
                                 <div class="form-group mb-3" id="category2-container" style="display: none;">
-                                    <label for="image-category" class="col-form-label">Categoria 2 (opzionale):</label>
+                                    <label for="categoryDropdown2" class="col-form-label">Categoria 2 (opzionale):</label>
                                     <div class="dropdown">
                                         <button class="btn btn-secondary dropdown-toggle w-100 text-center category-dropdown" type="button" id="categoryDropdown2" data-bs-toggle="dropdown" aria-expanded="false">
                                             Seleziona una categoria
@@ -56,7 +56,7 @@ class UploadModal {
                                     </div>
                                 </div>
                                 <div class="form-group mb-3" id="category3-container" style="display: none;">
-                                    <label for="image-category" class="col-form-label">Categoria 3 (opzionale):</label>
+                                    <label for="categoryDropdown3" class="col-form-label">Categoria 3 (opzionale):</label>
                                     <div class="dropdown">
                                         <button class="btn btn-secondary dropdown-toggle w-100 text-center category-dropdown" type="button" id="categoryDropdown3" data-bs-toggle="dropdown" aria-expanded="false">
                                             Seleziona una categoria
@@ -190,7 +190,7 @@ class UploadModal {
             menu.addEventListener('click', (e) => {
                 if (e.target.classList.contains('category-option')) {
                     this.handleCategorySelection(e, parseInt(level), buttons, inputs, menus);
-                    document.dispatchEvent(new CustomEvent('categoryChange', { 
+                    document.getElementById('upload-image-form').dispatchEvent(new CustomEvent('categoryChange', { 
                         detail: { 
                             level: parseInt(level),
                             value: e.target.getAttribute('data-value')

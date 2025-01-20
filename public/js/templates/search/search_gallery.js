@@ -2,7 +2,6 @@
 
 class SearchGallery {
 
-
     constructor(images, standard_background = false) {
         this.images = images;
         this.standard_background = standard_background;
@@ -35,7 +34,7 @@ class SearchGallery {
 
     #renderImage(image) {
         return `
-            <a class="image-anchor search-result-anchor" href="#">
+            <a class="image-anchor search-result-anchor" href="/image/${image.Id}">
                 <div class="search-result-wrapper light-grey-border">
                     <img class="search-result-img" src="${image.ImagePath.replace('db_images', 'imageFile')}" alt="${image.Title}">
                     <div class="search-result-overlay-desc d-flex flex-column-reverse">    

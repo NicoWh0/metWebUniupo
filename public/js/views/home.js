@@ -67,34 +67,30 @@ export class HomeView {
     }
 
     async #loadData() {
-        try {
-            // Use categories from appState
-            const mainCategoryNames = appState.mainCategories.map(cat => cat.name);
-            
-            // Convert categories and filter main ones
-            this.categories = appState.categories;
+        
+        // Use categories from appState
+        const mainCategoryNames = appState.mainCategories.map(cat => cat.name);
+        
+        // Convert categories and filter main ones
+        this.categories = appState.categories;
 
-            // Filter main categories in the correct order
-            this.mainCategories = mainCategoryNames
-                .map(name => this.categories.find(cat => cat.name === name))
-                .filter(cat => cat !== undefined);
+        // Filter main categories in the correct order
+        this.mainCategories = mainCategoryNames
+            .map(name => this.categories.find(cat => cat.name === name))
+            .filter(cat => cat !== undefined);
 
-            // Filter side categories
-            this.sideCategories = this.categories.filter(
-                category => !mainCategoryNames.includes(category.name)
-            );
+        // Filter side categories
+        this.sideCategories = this.categories.filter(
+            category => !mainCategoryNames.includes(category.name)
+        );
 
-            // Instantiate components that need data
-            this.carousel = new Carousel(this.mainCategories);
-            this.scrollingMenu = new ScrollingMenu(this.sideCategories);
-            const tags = await API.getMostUsedTags();
-            this.exploreTitleRow = new ExploreTitleRow(tags);
-            const images = await API.getRandomImages();
-            this.searchGallery = new SearchGallery(images, true);
-
-        } catch (error) {
-            console.error('Error loading home page data:', error);
-        }
+        // Instantiate components that need data
+        this.carousel = new Carousel(this.mainCategories);
+        this.scrollingMenu = new ScrollingMenu(this.sideCategories);
+        const tags = await API.getMostUsedTags();
+        this.exploreTitleRow = new ExploreTitleRow(tags);
+        const images = await API.getRandomImages();
+        this.searchGallery = new SearchGallery(images, true); 
     }
 
     async #updateComponents() {

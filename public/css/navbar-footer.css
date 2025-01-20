@@ -328,7 +328,7 @@
     text-overflow: ellipsis;
 }
 
-#tags-container {
+#tags-container, #edit-tags-container {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
@@ -467,15 +467,16 @@
     color: #cfcfcf !important;
 }
 
-#upload-image-form textarea {
+#upload-image-form textarea, #edit-image-form textarea {
     height: 5.5rem;
 }
 
 #upload-image-button:disabled, #upload-image-button:disabled:hover, #upload-image-button:disabled:active {
-    background-color: #a8a8a8;
-    border-color: #a8a8a8;
-    cursor: not-allowed;
-    pointer-events: auto;
+    background-color: #a8a8a8 !important;
+    border-color: #a8a8a8 !important;
+    color: #f0f0f0 !important;
+    cursor: not-allowed !important;
+    pointer-events: auto !important;
 }
 
 

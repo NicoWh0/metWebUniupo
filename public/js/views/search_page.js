@@ -44,6 +44,8 @@ class SearchPage {
         const mainContent = document.querySelector('#content');
         mainContent.innerHTML = this.#render();
 
+        
+
         // Attach event listeners
         document.addEventListener('search', this.handleSearch);
         document.addEventListener('filterChange', this.handleFilterChange);

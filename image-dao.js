@@ -45,7 +45,7 @@ class ImageDao {
 
     getRandomImages(limit = 30) {
         return new Promise((resolve, reject) => {
-            const sql = `SELECT i.Title, i.Description, i.UploadDate, i.ImagePath, i.Author AS AuthorId, u.Username AS AuthorName, u.UserImage AS AuthorImage
+            const sql = `SELECT i.Id, i.Title, i.Description, i.UploadDate, i.ImagePath, i.Author AS AuthorId, u.Username AS AuthorName, u.UserImage AS AuthorImage
             FROM Image i JOIN User u ON u.Id = i.Author ORDER BY RANDOM() LIMIT ?`;
             db.all(sql, [limit], function(err, rows) {
                 if(err) reject(err);
@@ -175,9 +175,39 @@ class ImageDao {
     }
 
     editImage(imageId, data) {
+        console.log("Editing image: ", imageId);
+        console.log(data);
         return new Promise((resolve, reject) => {
-            const sql = 'UPDATE Image SET Title = ?, Description = ? WHERE Id = ?';
-            db.run(sql, [data.title, data.description, imageId], function(err) {
+            db.serialize(() => {
+                db.run(
+                    'UPDATE Image SET Title = ?, Description = ? WHERE Id = ?', [data.title, data.description, imageId],
+                    function(err) { if(err) reject(err) }
+                );
+                db.run(
+                    'DELETE FROM ImageCategory WHERE ImageId = ?', [imageId],
+                    function(err) { if(err) reject(err) }
+                );
+                db.run(
+                    'INSERT INTO ImageCategory(ImageId, CategoryId) VALUES' + this.#generatePlaceHolder(data.categories, imageId), data.categories,
+                    function(err) { if(err) reject(err) }
+                );
+                db.run(
+                    'DELETE FROM ImageTag WHERE ImageId = ?', [imageId],
+                    function(err) { if(err) reject(err) }
+                );
+                db.run(
+                    'INSERT INTO ImageTag(ImageId, TagName) VALUES' + this.#generatePlaceHolder(data.tags, imageId), data.tags,
+                    function(err) { if(err) reject(err) }
+                );
+                resolve();
+            });
+        });
+    }
+
+    deleteImage(imageId) {
+        return new Promise((resolve, reject) => {
+            const sql = 'DELETE FROM Image WHERE Id = ?';
+            db.run(sql, [imageId], function(err) {
                 if(err) reject(err);
                 else resolve();
             });
@@ -226,7 +256,7 @@ class ImageDao {
 
     getImages(options) {
         return new Promise((resolve, reject) => {
-            let sql = `SELECT DISTINCT i.Title, i.Description, i.UploadDate, i.ImagePath, i.Author AS AuthorId, u.Username AS AuthorName, u.UserImage AS AuthorImage, cnt1.Likes, cnt2.Comments 
+            let sql = `SELECT DISTINCT i.Id, i.Title, i.Description, i.UploadDate, i.ImagePath, i.Author AS AuthorId, u.Username AS AuthorName, u.UserImage AS AuthorImage, cnt1.Likes, cnt2.Comments 
             FROM Image i JOIN User u ON u.Id = i.Author JOIN ImageCategory ic ON i.Id = ic.ImageId JOIN Category c ON ic.CategoryId = c.Id JOIN ImageTag it ON it.ImageId = i.Id
             JOIN ( SELECT i.Id, COUNT(il.ImageId) AS Likes FROM Image i LEFT JOIN ImageLike il ON i.Id = il.ImageId GROUP BY i.Id ) cnt1 ON cnt1.Id = i.Id 
             JOIN ( SELECT i.Id, COUNT(c.ImageId) AS Comments FROM Image i LEFT JOIN Comment c ON i.Id = c.ImageId GROUP BY i.Id ) cnt2 ON cnt2.Id = i.Id`;

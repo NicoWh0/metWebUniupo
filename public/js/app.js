@@ -44,8 +44,8 @@ page('/search', async (ctx) => {
     const sortValue = query.split('&')[2]?.split('=')[1];
 
     const searchPage = new SearchPage(
-        "Risultati della ricerca", // Title
-        "0 risultati trovati",     // Counter (will be updated with actual results),
+        "Risultati della ricerca", 
+        "0 risultati trovati",    
         searchTerm ?? '',
         searchBy ?? 'all',
         sortValue ?? ''
@@ -58,7 +58,13 @@ page('/image/:id', async (ctx) => {
     console.log(ctx);
     const imagePage = new ImagePage();
     document.title = 'GroundArt - Image';
+    ctx.imagePage = imagePage;
     await imagePage.mount(ctx.params.id);
+});
+
+page.exit('/image/:id', async (ctx, next) => {
+    ctx.imagePage.unmount();
+    next();
 });
 
 page('*', () => {

@@ -13,7 +13,7 @@ class Comments {
                                 <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
                             </svg>
                         </div>
-                        <textarea id="comment-form" class="form-control" aria-describedby="commentBlock" placeholder="Inserisci un commento (max 300 caratteri)" maxlength="300"></textarea>
+                        <textarea id="comment-form" class="form-control" aria-describedby="commentBlock" placeholder="Inserisci un commento (max 256 caratteri)" maxlength="256" minlength="1"></textarea>
                     </div>
                     <div id="comments-column" class="d-flex flex-column">
                         <div class="comment-wrapper d-flex flex-row">
