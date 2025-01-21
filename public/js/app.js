@@ -64,6 +64,7 @@ page('/image/:id', async (ctx) => {
 
 page.exit('/image/:id', async (ctx, next) => {
     ctx.imagePage.unmount();
+    ctx.imagePage = null;
     next();
 });
 

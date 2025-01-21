@@ -514,7 +514,7 @@ app.get('/images/tags', (_req, res) => {
 app.get('/images/:id', (req, res) => {
     imageDao.getImageById(req.params.id).then(result => {
         if(result) {
-            result['editable'] = req.isAuthenticated() && (req.user.id === result.author || req.user.type === 1);
+            result['editable'] = req.isAuthenticated() && (req.user.id === result.AuthorId || req.user.type === 1);
             res.status(200).json(result);
         }
         else res.status(404).json({error: 'Image not found'});
@@ -566,7 +566,7 @@ app.post('/images/:id/unlike', isLogged, (req, res) => {
 });
 
 app.get('/images/:id/isliked', isLogged, (req, res) => {
-    imageDao.isImageLiked(req.user.id, req.params.id).then(result => res.status(200).json(result)).catch(err => 
+    imageDao.isImageLiked(req.user.id, req.params.id).then(result => res.status(200).json({isLiked: result !== undefined})).catch(err => 
         res.status(500).json({errors: {'Param' : 'Server', 'message' : err}})
     );
 });
@@ -577,23 +577,23 @@ app.get('/images/:id/likes', (req, res) => {
     ); 
 });
 
-app.post('/images/:id/comments', isLogged, check('text').isLength({max: 256, min: 1}), (req, res) => {
+app.post('/images/:id/comments', isLogged, check('content', 'Il testo del commento deve essere lungo al massimo 128 caratteri.').isLength({max: 128, min: 1}), (req, res) => {
     console.log(req.body);
     const errors = validationResult(req);
     if(!errors.isEmpty()) return res.status(422).json({errors: errors.array()});
-    commentDao.addComment(req.user.id, req.params.id, req.body.text).then(_done => res.status(201).end()).catch(err => {
+    commentDao.addComment(req.user.id, req.params.id, req.body.content).then(result => res.status(201).json({id: result})).catch(err => {
         return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
     });
 });
 
-app.put('/images/:id/comments/:commentId', isLogged, check('text').notEmpty(), (req, res) => {
+app.put('/images/:id/comments/:commentId', isLogged, check('content').notEmpty(), (req, res) => {
     commentDao.getCommentAuthor(req.params.commentId).then(author => {
         //console.log("Author: " + author);
         //console.log("User: " + req.user.id);
         if(author === req.user.id || req.user.type === 1) { //se l'utente è l'autore del commento o è admin
             const errors = validationResult(req);
             if(!errors.isEmpty()) return res.status(422).json({errors: errors.array()});
-            commentDao.editComment(req.params.commentId, req.body.text).then(_done => res.status(201).end()).catch(err => {
+            commentDao.editComment(req.params.commentId, req.body.content).then(_done => res.status(201).end()).catch(err => {
                 return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
             });
         }

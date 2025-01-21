@@ -90,6 +90,44 @@ class API {
         }
     }
 
+    static async isImageLiked(imageId) {
+        try {
+            const response = await fetch(`/images/${imageId}/isliked`, { headers: this.headers });
+            const data = await response.json();
+            console.log("Is image liked: ", data.isLiked);
+            return data.isLiked;
+        } catch (error) {
+            console.error('Error checking if image is liked:', error);
+            return false;
+        }
+    }
+
+    static async likeImage(imageId) {
+        try {
+            const response = await fetch(`/images/${imageId}/like`, {
+                method: 'POST',
+                headers: this.headers
+            });
+            return response;
+        } catch (error) {
+            console.error('Error liking image:', error);
+            throw error;
+        }
+    }
+
+    static async unlikeImage(imageId) {
+        try {
+            const response = await fetch(`/images/${imageId}/unlike`, {
+                method: 'POST',
+                headers: this.headers
+            });
+            return response;
+        } catch (error) {
+            console.error('Error unliking image:', error);
+            throw error;
+        }
+    }
+
     static async getImageById(id) {
         try {
             const response = await fetch(`/images/${id}`, { headers: this.headers });
@@ -135,6 +173,9 @@ class API {
             const data = await response.json();
             return data;
         } catch (error) {
+            if(error.cause === 404) {
+                return [];
+            }
             console.error('Error fetching tags by image id:', error);
             throw error;
         }
@@ -149,6 +190,7 @@ class API {
             const data = await response.json();
             return data;
         } catch (error) {
+            //Not handling 404 because a image MUST have at least one category
             console.error('Error fetching categories by image id:', error);
             throw error;
         }
@@ -160,8 +202,26 @@ class API {
             const data = await response.json();
             return data;
         } catch (error) {
+            if(error.cause === 404) {
+                return [];
+            }
             console.error('Error fetching comments by image id:', error);
-            return null;
+            throw error;
+        }
+    }
+
+    static async addComment(imageId, content) {
+        try {
+            const response = await fetch(`/images/${imageId}/comments`, {
+                method: 'POST',
+                headers: this.headers,
+                body: JSON.stringify({ content })
+            });
+            const data = await response.json();
+            return data.id;
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            throw error;
         }
     }
 

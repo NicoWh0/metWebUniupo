@@ -41,6 +41,9 @@ class EditImageModal {
                                 <div class="form-group mb-3">
                                     <label for="edit-image-description" class="col-form-label">Descrizione:</label>
                                     <textarea class="form-control" id="edit-image-description" maxlength="128">${this.description ?? ''}</textarea>
+                                    <div class="form-text" style="color: #808080;">
+                                        La descrizione deve essere lunga al massimo 128 caratteri.
+                                    </div>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="editCategoryDropdown1" class="col-form-label">Categoria 1 (obbligatoria)<span class="text-danger">*</span>:</label>

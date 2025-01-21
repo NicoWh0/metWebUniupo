@@ -13,7 +13,7 @@ class ImagePage {
 
     constructor() {
         this.imageContent = null;
-        this.comments = new Comments();
+        this.comments = null;
         this.related = new Related();
 
         //Image data
@@ -30,9 +30,16 @@ class ImagePage {
         //for now, we just need to render the page
         try {
             await this.#loadImageData(id);
-            this.imageContent = new ImageContent(this.imageData, this.imageTags, this.imageCategories);
+            let isLiked = false;
+            if (appState.auth.isLoggedIn) {
+                isLiked = await API.isImageLiked(id);
+            }
+            this.imageContent = new ImageContent(this.imageData, this.imageTags, this.imageCategories, isLiked);
             const mainContent = document.getElementById('content');
+            this.comments = new Comments(this.imageComments, id);
             mainContent.innerHTML = await this.#render();
+            this.imageContent.attachEventListeners();
+            this.comments.attachEventListeners();
             await this.#addModals();
         } catch (error) {
             if(error.cause === 404) {
@@ -81,7 +88,7 @@ class ImagePage {
 
     async #addModals() {
         const modalsContainer = document.querySelector('#modals');
-        if(modalsContainer) {
+        if(modalsContainer && this.imageData.editable) {
             // Create and add edit image modal
             const editImageModal = new EditImageModal({
                 title: this.imageData.Title,
@@ -129,7 +136,9 @@ class ImagePage {
 
     async #loadImageData(id) {  
         this.imageData = await API.getImageById(id);
-        this.imageTags = (await API.getTagsByImageId(id)).map(tag => tag.TagName);
+        console.log("Image page data: ", this.imageData);
+ 
+        this.imageTags = (await API.getTagsByImageId(id)).map(tag => tag.TagName);    
         this.imageCategories = (await API.getCategoriesByImageId(id)).map(category => category.Name);
         //Ensure categories are in the correct order
         const mainCategory = this.imageCategories.find(category => appState.mainCategories.find(cat => cat.name === category));

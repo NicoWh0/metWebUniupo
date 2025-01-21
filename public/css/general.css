@@ -111,6 +111,10 @@ h6 {
 	font-style: italic;
 }
 
+em {
+    font-style: italic;
+}
+
 ::selection {
 	background-color: #e29911;
 	color: #0f0f0f;

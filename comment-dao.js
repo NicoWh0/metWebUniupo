@@ -10,7 +10,7 @@ class CommentDao {
             const sql = "INSERT INTO Comment(UserId, ImageId, Content, UploadDate) VALUES(?, ?, ?, DATETIME('now', 'localtime'))";
             db.run(sql, [userId, imageId, content], function(err) {
                 if(err) reject(err);
-                else resolve();
+                else resolve(this.lastID);
             });
         })
     }
@@ -27,7 +27,7 @@ class CommentDao {
 
     getCommentsByImageId(imageId) {
         return new Promise((resolve, reject) => {
-            const sql = "SELECT Comment.Id, Comment.Content, Comment.UploadDate, User.Username FROM Comment JOIN User ON Comment.UserId = User.Id WHERE Comment.ImageId = ?";
+            const sql = "SELECT Comment.Id, Comment.Content, Comment.UploadDate, User.Username, User.Id AS UserId FROM Comment JOIN User ON Comment.UserId = User.Id WHERE Comment.ImageId = ?";
             db.all(sql, [imageId], function(err, rows) {
                 if(err) reject(err);
                 else resolve(rows);
