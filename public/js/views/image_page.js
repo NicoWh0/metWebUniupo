@@ -156,6 +156,14 @@ class ImagePage {
 
 
         this.imageComments = await API.getCommentsByImageId(id);
+        if(this.imageComments.length > 0 && appState.auth.isLoggedIn) {
+            this.imageComments = await Promise.all(this.imageComments.map(
+                async comment => {
+                    await API.isCommentLiked(id, comment.Id).then(result => comment['liked'] = result);
+                    return comment;
+                }
+            ));
+        }
     }
 
     #attachEventListeners() {

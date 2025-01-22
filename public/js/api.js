@@ -118,7 +118,7 @@ class API {
     static async unlikeImage(imageId) {
         try {
             const response = await fetch(`/images/${imageId}/unlike`, {
-                method: 'POST',
+                method: 'DELETE',
                 headers: this.headers
             });
             return response;
@@ -221,6 +221,43 @@ class API {
             return data.id;
         } catch (error) {
             console.error('Error adding comment:', error);
+            throw error;
+        }
+    }
+
+    static async isCommentLiked(imageId, commentId) {
+        try {
+            const response = await fetch(`/images/${imageId}/comments/${commentId}/isliked`, { headers: this.headers });
+            const data = await response.json();
+            return data.isLiked;
+        } catch (error) {
+            console.error('Error checking if comment is liked:', error);
+            return false;
+        }
+    }
+
+    static async likeComment(imageId, commentId) {
+        try {
+            const response = await fetch(`/images/${imageId}/comments/${commentId}/like`, { 
+                method: 'POST',
+                headers: this.headers 
+            });
+            return response;
+        } catch (error) {
+            console.error('Error liking comment:', error);
+            throw error;
+        }
+    }
+
+    static async unlikeComment(imageId, commentId) {
+        try {
+            const response = await fetch(`/images/${imageId}/comments/${commentId}/unlike`, {
+                method: 'DELETE',
+                headers: this.headers
+            });
+            return response;
+        } catch (error) {
+            console.error('Error unliking comment:', error);
             throw error;
         }
     }

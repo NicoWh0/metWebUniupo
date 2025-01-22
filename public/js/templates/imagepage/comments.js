@@ -42,7 +42,7 @@ class Comments {
     #renderComments() {
         return this.comments.length > 0 ?
             this.comments.map(comment => this.#renderComment(comment)).join('') :
-            `<div class="d-flex flex-column align-items-center justify-content-center w-100">
+            `<div id="no-comments-message" class="d-flex flex-column align-items-center justify-content-center w-100">
                 <p class="text-center"><em>Ancora nessun commento disponibile</em></p>
                 <p class="text-center"><em>Sii il primo a commentare questa immagine!</em></p>
             </div>`;
@@ -53,12 +53,19 @@ class Comments {
         
         if (commentForm) {
             // Handle focus event
-            commentForm.addEventListener('focus', () => {
+            commentForm.addEventListener('click', () => {
                 if (!appState.auth.isLoggedIn) {
                     // If user is not logged in, show login modal
                     const loginModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('loginModal'));
                     loginModal.show();
                     commentForm.blur(); // Remove focus from textarea
+                }
+            });
+
+            commentForm.addEventListener('focus', () => {
+                if (!appState.auth.isLoggedIn) {
+                    //Prevent focus if user is not logged in
+                    commentForm.blur(); 
                 }
             });
 
@@ -86,10 +93,10 @@ class Comments {
 
                         // Add new comment to UI
                         const commentsColumn = document.getElementById('comments-column');
-                        
-                        // If there were no comments, clear the "no comments" message
-                        if (this.comments.length === 0) {
-                            commentsColumn.innerHTML = '';
+
+                        // If there were no comments, delete the "no comments" message
+                        if (document.getElementById('no-comments-message')) {
+                            document.getElementById('no-comments-message').remove();
                         }
 
                         // Add the new comment to the beginning of the list
@@ -111,9 +118,66 @@ class Comments {
                 }
             });
         }
+
+        // Add event listeners for comment likes
+        document.querySelectorAll('.comment-like-button').forEach(likeButton => {
+            likeButton.addEventListener('click', async () => {
+                if (!appState.auth.isLoggedIn) {
+                    // If user is not logged in, show login modal
+                    const loginModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('loginModal'));
+                    loginModal.show();
+                    return;
+                }
+
+                const commentId = likeButton.dataset.commentId;
+                console.log("Adding like to comment: ", commentId);
+                const likeCounter = document.querySelector(`.comment-like-counter[data-comment-id="${commentId}"]`);
+                const comment = this.comments.find(c => c.Id.toString() === commentId);
+                console.log("Comment: ", comment);
+                if (!comment) return;
+
+                try {
+                    // Toggle like status
+                    const newLikeStatus = !comment.liked;
+                    
+                    // Optimistic UI update
+                    comment.liked = newLikeStatus;
+                    likeButton.classList.toggle('liked');
+                    const currentLikes = parseInt(likeCounter.textContent);
+                    likeCounter.textContent = currentLikes + (newLikeStatus ? 1 : -1);
+
+                    // Make API request
+                    if (newLikeStatus) {
+                        await API.likeComment(this.imageId, commentId);
+                    } else {
+                        await API.unlikeComment(this.imageId, commentId);
+                    }
+
+                } catch (error) {
+                    console.error('Error toggling comment like:', error);
+                    // Revert UI changes if API call fails
+                    comment.liked = !comment.liked;
+                    likeButton.classList.toggle('liked');
+                    const currentLikes = parseInt(likeCounter.textContent);
+                    likeCounter.textContent = currentLikes + (comment.liked ? 1 : -1);
+
+                    // Show error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'alert alert-danger mt-2';
+                    errorDiv.textContent = error.message || 'Errore durante l\'aggiornamento del like. Riprova.';
+                    likeButton.parentNode.insertAdjacentElement('afterend', errorDiv);
+
+                    // Remove error message after 5 seconds
+                    setTimeout(() => {
+                        errorDiv.remove();
+                    }, 5000);
+                }
+            });
+        });
     }
 
     #renderComment(comment) {
+        console.log("Rendering comment: ", comment);
         return `
             <div class="comment-wrapper d-flex flex-row">
                 <div class="comment-user-image-wrapper d-flex align-items-start">
@@ -130,15 +194,20 @@ class Comments {
                         </div>
                     </div>
                     <div class="comment-buttons-wrapper d-flex flex-row">
-                        <svg class="comment-button comment-edit-button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#editComment">
-                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
-                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
-                        </svg>
+                        ${comment.editable ? `
+                            <svg class="comment-button comment-edit-button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" data-bs-toggle="modal" data-bs-target="#editComment">
+                                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                            </svg>
+                        ` : ''}
                         <div class="d-flex flex-row justify-content-between align-items-center">
-                            <svg class="comment-button comment-like-button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"> 
+                            <svg class="comment-button comment-like-button${comment.liked ? ' liked' : ''}" 
+                                 data-comment-id="${comment.Id}"
+                                 xmlns="http://www.w3.org/2000/svg" 
+                                 viewBox="0 0 32 32"> 
                                 <path d="M0.256 12.16q0.544 2.080 2.080 3.616l13.664 14.144 13.664-14.144q1.536-1.536 2.080-3.616t0-4.128-2.080-3.584-3.584-2.080-4.16 0-3.584 2.080l-2.336 2.816-2.336-2.816q-1.536-1.536-3.584-2.080t-4.128 0-3.616 2.080-2.080 3.584 0 4.128z"/>
                             </svg>
-                            <span class="comment-like-counter">0</span>
+                            <span class="comment-like-counter" data-comment-id="${comment.Id}">${comment.Likes || 0}</span>
                         </div>
                     </div>
                 </div>

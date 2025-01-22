@@ -545,7 +545,7 @@ app.get('/images/:id/comments', (req, res) => {
     commentDao.getCommentsByImageId(req.params.id).then(result => {
         if(result.length === 0) return res.status(404).json({error: 'Comments not found'});
         else {
-            result.forEach(el => el['editable'] = req.isAuthenticated() && (req.user.id === el.author || req.user.type === 1));
+            result.forEach(el => el['editable'] = req.isAuthenticated() && (req.user.id === el.UserId || req.user.type === 1));
             return res.status(200).json(result);
         }
     }).catch(err => {
@@ -559,7 +559,7 @@ app.post('/images/:id/like', isLogged, (req, res) => {
     );
 });
 
-app.post('/images/:id/unlike', isLogged, (req, res) => {
+app.delete('/images/:id/unlike', isLogged, (req, res) => {
     imageDao.unlikeImage(req.user.id, req.params.id).then(_done => res.status(201).end()).catch(err => 
         res.status(500).json({errors: {'Param' : 'Server', 'message' : err}})
     );
@@ -609,14 +609,14 @@ app.post('/images/:id/comments/:commentId/like', isLogged, (req, res) => {
     });
 });
 
-app.post('/images/:id/comments/:commentId/unlike', isLogged, (req, res) => {
+app.delete('/images/:id/comments/:commentId/unlike', isLogged, (req, res) => {
     commentDao.unlikeComment(req.user.id, req.params.commentId).then(_done => res.status(201).end()).catch(err => {
         return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
     });
 });
 
 app.get('/images/:id/comments/:commentId/isliked', isLogged, (req, res) => {
-    commentDao.isCommentLiked(req.user.id, req.params.commentId).then(result => res.status(200).json(result)).catch(err => {
+    commentDao.isCommentLiked(req.user.id, req.params.commentId).then(result => res.status(200).json({isLiked: result !== undefined})).catch(err => {
         return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
     });
 });

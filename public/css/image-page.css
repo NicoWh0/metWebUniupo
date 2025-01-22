@@ -241,6 +241,14 @@
 	fill: #c72121;
 }
 
+.comment-like-button.liked {
+	fill: #c72121;
+}
+
+.comment-like-button.liked:hover {
+	animation: none;
+}
+
 .comment-buttons-wrapper .comment-edit-button:hover {
 	animation: editHoverComment .2s linear;
 	fill: #eb9d0c;
@@ -488,6 +496,11 @@
 	#img-interact-container {
 		width: 5.5rem;
 	}
+	#comments-section > #comments-title-container #comment-form-group, 
+	#comments-section > .d-flex.flex-column .comment-wrapper.d-flex.flex-row {
+		width: 130%;
+	}
+
 }
 
 @media only screen and (max-width: 620px) {
@@ -545,6 +558,12 @@
 	}
 }
 
+@media only screen and (max-width: 500px) {
+	#comments-section > #comments-title-container #comment-form-group > #comment-form {
+		height: 12rem;
+	}
+}
+
 @media only screen and (max-width: 290px) {
 	.related-img-container {
 		height: 4rem;
@@ -553,4 +572,13 @@
 	#img-interact-container {
 		bottom: 3.2rem;
 	}
+	#comments-section > #comments-title-container #comment-form-group > #comment-form {
+		height: 15rem;
+	}
+}
+
+@media screen and (min-width: 1390px) {
+    #comments-section {
+        height: 100%; /* Fill the parent container */
+    }
 }
