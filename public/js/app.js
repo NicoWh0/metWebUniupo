@@ -55,7 +55,6 @@ page('/search', async (ctx) => {
 });
 
 page('/image/:id', async (ctx) => {
-    console.log(ctx);
     const imagePage = new ImagePage();
     document.title = 'GroundArt - Image';
     ctx.imagePage = imagePage;
@@ -65,6 +64,15 @@ page('/image/:id', async (ctx) => {
 page.exit('/image/:id', async (ctx, next) => {
     ctx.imagePage.unmount();
     ctx.imagePage = null;
+    // Reset body style (if related image is clicked in the offcanvas)
+    document.getElementsByTagName('body')[0].style.overflow = null;
+    document.getElementsByTagName('body')[0].style.paddingRight = null;
+    next();
+});
+
+page.exit('*', async (_, next) => {
+    //Scroll to top when exiting any page
+    window.scrollTo(0, 0);
     next();
 });
 

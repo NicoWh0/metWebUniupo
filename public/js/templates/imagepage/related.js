@@ -1,6 +1,72 @@
 "use strict";
 
+import API from "../../api.js";
+import { appState } from "../../app.js";
+
 class Related {
+    constructor(imageData) {
+        this.imageData = imageData;
+        this.relatedImages = [];
+        this.authorImages = [];
+    }
+
+    async fetchRelatedImages() {
+        try {
+            let images = [];
+            const neededImages = 9;
+
+            // Fetch author's other images first
+            this.authorImages = await API.searchImages(this.imageData.AuthorName, 'author', 'date', 10);
+            // Remove current image (if it's in the list) and take only the first 9
+            this.authorImages = this.authorImages
+                .filter(img => img.Id !== this.imageData.Id)
+                .slice(0, 9);
+
+            // (Related images) Try categories first
+            if (this.imageData.categories && this.imageData.categories.length > 0) {
+                const randomCategoryOrder = [...this.imageData.categories].sort(() => Math.random() - 0.5);
+                for(const category of randomCategoryOrder) {
+                    const categoryImages = await API.searchImages(category, 'category');
+                    images = images.concat(categoryImages.filter(img => img.Id !== this.imageData.Id));
+                }
+            }
+            images = images.filter(img => img.AuthorId !== this.imageData.AuthorId);
+
+            // (Related images) If we need more images, try tags
+            if (this.imageData.tags && this.imageData.tags.length > 0) {
+                const randomTagOrder = [...this.imageData.tags].sort(() => Math.random() - 0.5);
+                for(const tag of randomTagOrder) {
+                    const tagImages = await API.searchImages(tag, 'tag');
+                    images = images.concat(tagImages.filter(img => 
+                        img.Id !== this.imageData.Id && 
+                        !images.some(existingImg => existingImg.Id === img.Id)
+                    ));
+                }
+            }
+            images = images.filter(img => img.AuthorId !== this.imageData.AuthorId);
+
+            // (Related images) If we still need more images, get random ones
+            if (images.length < neededImages) {
+                const randomImages = await API.getRandomImages(neededImages - images.length);
+                images = images.concat(randomImages.filter(img => 
+                    img.Id !== this.imageData.Id && 
+                    !images.some(existingImg => existingImg.Id === img.Id)
+                ));
+            }
+            images = images.filter(img => img.AuthorId !== this.imageData.AuthorId);
+
+            // One last shuffle
+            images = images.sort(() => Math.random() - 0.5);
+            // Take only the first 9
+            this.relatedImages = images.slice(0, 9);
+
+        } catch (error) {
+            console.error('Error fetching related images:', error);
+            this.relatedImages = [];
+            this.authorImages = [];
+        }
+    }
+
     render() {
         return `
             <div class="d-flex flex-column h-50 align-content-center justify-content-start">
@@ -9,129 +75,48 @@ class Related {
                 </div>
                 <div class="container-fluid">
                     <div class="row row-cols-3 d-flex flex-row gx-1 gy-4 justify-content-around">
-                        <div class="col d-flex justify-content-center">    
-                            <a href="#" title="Fantasy Forest">
-                                <div class="related-img-container">                                       
-                                    <img class="related-img" src="img/image_chart/small_forest.jpg" alt="Fantasy Forest">
-                                    <div class="related-img-dark-transparent-layer"></div>
-                                </div> 
-                            </a>
-                        </div>
-                        <div class="col d-flex justify-content-center">
-                            <a href="#" title="Sky Mountain">
-                                <div class="related-img-container">                                       
-                                    <img class="related-img" src="img/image_chart/man_on_oblivion.jpg" alt="Sky Mountain">
-                                    <div class="related-img-dark-transparent-layer"></div>
-                                </div> 
-                            </a>
-                        </div>
-                        <div class="col d-flex justify-content-center">
-                            <a href="#" title="fiume che scorre">
-                                <div class="related-img-container">                                       
-                                    <img class="related-img" src="img/image_chart/quiet_river.jpg" alt="fiume che scorre">
-                                    <div class="related-img-dark-transparent-layer"></div>
-                                </div> 
-                            </a>
-                        </div>
-                        <div class="col d-flex justify-content-center">
-                            <a href="#" title="Radura con funghi">
-                                <div class="related-img-container">                                       
-                                    <img class="related-img" src="img/image_chart/radura.jpg" alt="Radura con funghi">
-                                    <div class="related-img-dark-transparent-layer"></div>
-                                </div> 
-                            </a>
-                        </div>
-                        <div class="col d-flex justify-content-center">
-                            <a href="#" title="Valley and Mountains">
-                                <div class="related-img-container">                                       
-                                    <img class="related-img" src="img/image_chart/robin-lhebrard-valley5.jpeg" alt="Valley and Mountains">
-                                    <div class="related-img-dark-transparent-layer"></div>
-                                </div> 
-                            </a>
-                        </div>
-                        <div class="col d-flex justify-content-center">
-                            <a href="#" title="Just Some Flowers">
-                                <div class="related-img-container">                                       
-                                    <img class="related-img" src="img/image_chart/robin-lhebrard-flowers.jpg" alt="Just Some Flowers">
-                                    <div class="related-img-dark-transparent-layer"></div>
-                                </div> 
-                            </a>
-                        </div>
-                        <div class="col d-flex justify-content-center">
-                            <a href="#" title="&quot;Ciclo&quot;">
-                                <div class="related-img-container">                                       
-                                    <img class="related-img" src="img/image_chart/bee_flower.jpg" alt="&quot;Ciclo&quot;">
-                                    <div class="related-img-dark-transparent-layer"></div>
-                                </div> 
-                            </a>
-                        </div>
-                        <div class="col d-flex justify-content-center">
-                            <a href="#" title="Chilling">
-                                <div class="related-img-container">                                       
-                                    <img class="related-img" src="img/image_chart/chilling_at_the_lake.jpg" alt="Chilling">
-                                    <div class="related-img-dark-transparent-layer"></div>
-                                </div> 
-                            </a>
-                        </div>
-                        <div class="col d-flex justify-content-center">
-                            <a href="#" title="Speed Forest Painting">
-                                <div class="related-img-container">                                       
-                                    <img class="related-img" src="img/image_chart/another_green_forest.jpg" alt="Speed Forest Painting">
-                                    <div class="related-img-dark-transparent-layer"></div>
-                                </div> 
-                            </a>
-                        </div>
+                        ${this.relatedImages.map(image => this.#renderImageThumbnail(image)).join('')}
                     </div>
                 </div>
             </div>
             <div class="d-flex flex-column h-50 align-content-center justify-content-start">
                 <div id="related-more-by-wrapper" class="d-flex flex-row align-items-end">
-                    <h3 id="more-by-title">Altro da NicoWho</h3>
+                    <h3 id="more-by-title">Altro da ${this.imageData.AuthorName}</h3>
                 </div>
                 <div class="container-fluid">
-                    <div class="row row-cols-3 d-flex flex-row gx-1 gy-4 justify-content-around">
-                        <div class="col d-flex justify-content-center">
-                            <a href="#" title="Cascata bianca">
-                                <div class="related-img-container">                                       
-                                    <img class="related-img" src="img/image_chart/white_peak_waterfall.jpg" alt="Cascata bianca">
-                                    <div class="related-img-dark-transparent-layer"></div>
-                                </div> 
-                            </a>
-                        </div>
-                        <div class="col d-flex justify-content-center">
-                            <a href="#" title="Può capitare">
-                                <div class="related-img-container">                                       
-                                    <img class="related-img" src="img/image_chart/oh_nouh.jpg" alt="Può capitare">
-                                    <div class="related-img-dark-transparent-layer"></div>
-                                </div> 
-                            </a>
-                        </div>
-                        <div class="col d-flex justify-content-center">
-                            <a href="#" title="Pilastro">
-                                <div class="related-img-container">                                       
-                                    <img class="related-img" src="img/image_chart/pillar.jpg" alt="Pilastro">
-                                    <div class="related-img-dark-transparent-layer"></div>
-                                </div> 
-                            </a>
-                        </div>
-                        <div class="col d-flex justify-content-center">
-                            <a href="#" title="Da solo in un nuovo posto">
-                                <div class="related-img-container">                                       
-                                    <img class="related-img" src="img/image_chart/lonely_in_a_new__place.jpg" alt="Da solo in un nuovo posto">
-                                    <div class="related-img-dark-transparent-layer"></div>
-                                </div> 
-                            </a>
-                        </div>
-                        <div class="col d-flex justify-content-center">
-                            <a href="#" title="Nebbia al tramonto">
-                                <div class="related-img-container">                                       
-                                    <img class="related-img" src="img/image_chart/mist_at_sunset.jpg" alt="Nebbia al tramonto">
-                                    <div class="related-img-dark-transparent-layer"></div>
-                                </div> 
-                            </a>
-                        </div>
-                    </div>
+                    ${this.#renderAuthorImages()}
                 </div>
+            </div>
+        `;
+    }
+
+    #renderImageThumbnail(image) {
+        return `
+            <div class="col d-flex justify-content-center">
+                <a href="/image/${image.Id}" title="${image.Title}">
+                    <div class="related-img-container">                                       
+                        <img class="related-img" src="${image.ImagePath.replace('db_images', 'imageFile')}" alt="${image.Title}">
+                        <div class="related-img-dark-transparent-layer"></div>
+                    </div> 
+                </a>
+            </div>
+        `;
+    }
+
+    #renderAuthorImages() {
+        if (this.authorImages.length === 0) {
+            return `
+                <div class="d-flex justify-content-center align-items-center h-100">
+                    <p class="text-center text-muted">
+                        Ops, sembra che ${this.imageData.AuthorName} non abbia pubblicato altre immagini oltre a questa
+                    </p>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="row row-cols-3 d-flex flex-row gx-1 gy-4 justify-content-around">
+                ${this.authorImages.map(image => this.#renderImageThumbnail(image)).join('')}
             </div>
         `;
     }

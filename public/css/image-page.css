@@ -154,6 +154,7 @@
 /* comment section */
 
 #comments-section {
+	min-height: 50vh;
 	padding-top: 5rem;
 	border-top: .1rem solid #464646;
 	background-color: #313131;
@@ -280,11 +281,12 @@
 
 #related {
 	max-width: 25%;
+	min-height: 120vh;
 	background-color: #2b2a2a;
 }
 
 #related-title-wrapper {
-	margin-top: .8rem;
+	margin-top: 1rem;
 	margin-bottom: 1.2rem;
 }
 

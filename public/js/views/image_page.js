@@ -14,7 +14,7 @@ class ImagePage {
     constructor() {
         this.imageContent = null;
         this.comments = null;
-        this.related = new Related();
+        this.related = null;
 
         //Image data
         this.imageData = null;
@@ -34,12 +34,23 @@ class ImagePage {
             if (appState.auth.isLoggedIn) {
                 isLiked = await API.isImageLiked(id);
             }
-            this.imageContent = new ImageContent(this.imageData, this.imageTags, this.imageCategories, isLiked);
             const mainContent = document.getElementById('content');
+            
+            this.imageContent = new ImageContent(this.imageData, this.imageTags, this.imageCategories, isLiked);
             this.comments = new Comments(this.imageComments, id);
+            this.related = new Related({
+                ...this.imageData,
+                tags: this.imageTags,
+                categories: this.imageCategories
+            });
+            await this.related.fetchRelatedImages();
+
             mainContent.innerHTML = await this.#render();
+
             this.imageContent.attachEventListeners();
             this.comments.attachEventListeners();
+            this.#attachEventListeners();
+
             await this.#addModals();
         } catch (error) {
             if(error.cause === 404) {
@@ -136,7 +147,6 @@ class ImagePage {
 
     async #loadImageData(id) {  
         this.imageData = await API.getImageById(id);
-        console.log("Image page data: ", this.imageData);
  
         this.imageTags = (await API.getTagsByImageId(id)).map(tag => tag.TagName);    
         this.imageCategories = (await API.getCategoriesByImageId(id)).map(category => category.Name);
@@ -146,11 +156,18 @@ class ImagePage {
 
 
         this.imageComments = await API.getCommentsByImageId(id);
+    }
 
-        console.log(this.imageData);
-        console.log(this.imageTags);
-        console.log(this.imageCategories);
-        console.log(this.imageComments); 
+    #attachEventListeners() {
+        const offcanvas = document.getElementById('offcanvas-end');
+        if (offcanvas) {
+            const bsOffcanvas = new bootstrap.Offcanvas(offcanvas);
+            window.addEventListener('resize', () => {
+                if (document.body.clientWidth > 1390 && bsOffcanvas) {
+                   bsOffcanvas.hide();
+                }
+            });
+        }
     }
 }
 

@@ -6,7 +6,6 @@ import API from "../../api.js";
 class ImageContent {
 
     constructor(imageData, imageTags, imageCategories, isLiked = false) {
-        console.log(imageData);
         this.imageData = imageData;
         this.imageTags = imageTags;
         this.imageCategories = imageCategories;
@@ -48,6 +47,10 @@ class ImageContent {
                         <div id="author-row" class="d-flex flex-row justify-content-between">
                             <span id="author-intro">di:</span>
                             <span id="author">${this.imageData.AuthorName}</span>
+                        </div>
+                        <div id="date-row" class="d-flex flex-row align-items-center mt-2">
+                            <span id="date-intro" class="me-2">Pubblicato il:</span>
+                            <span id="date" class="me-2">${new Date(this.imageData.UploadDate).toLocaleDateString('it-IT', { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                         <div id="categories-row" class="d-flex flex-row align-items-center mt-2">
                             <span class="categories-intro me-2">Categorie:</span>

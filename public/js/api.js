@@ -77,9 +77,9 @@ class API {
         }
     }
 
-    static async searchImages(value, param = '', order = '') {
+    static async searchImages(value, param = '', order = '', limit = 100) {
         try {
-            const response = await fetch(`/images/search?value=${value}&param=${param}&order=${order}`, { 
+            const response = await fetch(`/images/search?value=${value}&param=${param}&order=${order}&limit=${limit}`, { 
                 headers: this.headers 
             });
             const data = await response.json();

@@ -12,8 +12,8 @@ class Comments {
     render() {
         return `
             <div id="comments-section" class="row d-flex flex-column justify-content-around">
-                <h1 id="comments-title">Commenti</h1>
-                <div class="d-flex flex-column">
+                <div id="comments-title-container" class="d-flex flex-column justify-content-between">
+                    <h1 id="comments-title">Commenti</h1>
                     <div id="comment-form-group" class="input-group d-flex flex-row">
                         <div class="comment-user-image-wrapper d-flex align-items-start justify-content-start">
                             <svg class="comment-user-image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
@@ -22,13 +22,15 @@ class Comments {
                             </svg>
                         </div>
                         <textarea id="comment-form" 
-                                 class="form-control" 
-                                 aria-describedby="commentBlock" 
-                                 placeholder="Inserisci un commento (max 128 caratteri)" 
-                                 maxlength="128" 
-                                 minlength="1"
-                                 ${!appState.auth.isLoggedIn ? 'readonly' : ''}></textarea>
+                            class="form-control" 
+                            aria-describedby="commentBlock" 
+                            placeholder="Inserisci un commento (max 128 caratteri)" 
+                            maxlength="128" 
+                            minlength="1"
+                            ${!appState.auth.isLoggedIn ? 'readonly' : ''}></textarea>  
                     </div>
+                </div>
+                <div class="d-flex flex-column">
                     <div id="comments-column" class="d-flex flex-column">
                         ${this.#renderComments()}
                     </div>
