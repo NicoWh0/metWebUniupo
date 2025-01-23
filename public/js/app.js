@@ -6,10 +6,10 @@ import API from './api.js';
 import LoginModal from './templates/modals/login_modal.js';
 import RegisterModal from './templates/modals/register_modal.js';
 import UploadModal from './templates/modals/upload_modal.js';
+import ChangePasswordModal from './templates/modals/change_password_modal.js';
 import SearchPage from './views/search_page.js';
 import NotFound from './templates/others/not_found.js';
 import ImagePage from './views/image_page.js';
-
 // App state management
 const appState = {
     auth: {
@@ -76,6 +76,7 @@ page.exit('*', async (_, next) => {
     next();
 });
 
+
 page('*', () => {
     const notFound = new NotFound();
     document.title = 'GroundArt - Page not found';
@@ -120,6 +121,9 @@ function updateModals() {
             registerModal.attachEventListeners();
         }
         else {
+            const changePasswordModal = new ChangePasswordModal();
+            modalsContainer.insertAdjacentHTML('beforeend', changePasswordModal.render());
+            changePasswordModal.attachEventListeners();
             const uploadModal = new UploadModal();
             modalsContainer.insertAdjacentHTML('beforeend', uploadModal.render());
             uploadModal.attachEventListeners();  

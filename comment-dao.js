@@ -75,6 +75,16 @@ class CommentDao {
         })
     }
 
+    deleteComment(commentId) {
+        return new Promise((resolve, reject) => {
+            const sql = "DELETE FROM Comment WHERE Id = ?";
+            db.run(sql, [commentId], function(err) {
+                if(err) reject(err);
+                else resolve();
+            });
+        })
+    }
+
     getLikes(commentId) {
         return new Promise((resolve, reject) => {
             const sql = "SELECT COUNT(commentId) FROM CommentLike WHERE CommentId = ?";

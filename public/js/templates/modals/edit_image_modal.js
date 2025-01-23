@@ -5,6 +5,7 @@ import API from '../../api.js';
 
 class EditImageModal {
     constructor(imageData) {
+        this.id = imageData.id;
         this.title = imageData.title;
         this.description = imageData.description;
         this.categories = imageData.categories;
@@ -101,8 +102,6 @@ class EditImageModal {
                     </div>
                 </div>
             </div>
-
-            <!-- Delete Confirmation Modal -->
             <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content standard-background">
@@ -169,7 +168,7 @@ class EditImageModal {
                     confirmDeleteButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Eliminazione...';
 
                     // Call API to delete image
-                    //await API.deleteImage(this.imageData.id);
+                    await API.deleteImage(this.id);
 
                     // Close both modals
                     const editModal = bootstrap.Modal.getInstance(document.getElementById('editImage'));
@@ -178,7 +177,7 @@ class EditImageModal {
                     deleteModal.hide();
 
                     // Redirect to home page or refresh
-                    //window.location.href = '/';
+                    window.location.href = '/';
 
                 } catch (error) {
                     console.error('Error deleting image:', error);
@@ -394,22 +393,27 @@ class EditImageModal {
             if (value) categories.push(value);
         }
 
-        console.log({title, description, categories, tags});
-
         // Prepare the data object
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('description', description ?? '');
-        categories.forEach(cat => formData.append("categories[]", cat));
-        tags.forEach(tag => formData.append("tags[]", tag));
+        const dataToSend = {
+            title: title,
+            description: description?.length > 0 ? description : '',
+            categories: categories,
+            tags: tags
+        };
+        console.log(dataToSend);
 
         try {
             // Send the data to the server
-            //await API.editImage(formData);
+            await API.editImage(this.id, dataToSend);
             console.log('Edit successful');
             
             // Show success message
             this.showSuccessMessage('Modifica effettuata con successo!');
+
+            // Reload the page after 500ms
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
 
         } catch (error) {
             console.error('Edit failed:', error);
@@ -429,10 +433,9 @@ class EditImageModal {
         const modalBody = document.querySelector('#editImage .modal-body');
         modalBody.appendChild(successDiv);
 
-        // Optionally, remove the success message after a certain time
         setTimeout(() => {
             successDiv.remove();
-        }, 10000); // Remove after 10 seconds
+        }, 5000); // Remove after 5 seconds
     }
 
     showErrorMessage(message) {
@@ -444,8 +447,7 @@ class EditImageModal {
         // Append the error message to the modal body
         const modalBody = document.querySelector('#editImage .modal-body');
         modalBody.appendChild(errorDiv);
-    
-        // Optionally, remove the error message after a certain time
+
         setTimeout(() => {
             errorDiv.remove();
         }, 10000); // Remove after 10 seconds

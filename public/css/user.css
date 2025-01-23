@@ -57,7 +57,7 @@
 
 #user-posted-images {
 	user-select: none;
-	background-color: #161616;
+	background-color: #222222;
 	min-height: 30rem !important;
 	height: min-content;
 }
@@ -106,17 +106,36 @@
 	animation: fadeInUp .2s linear;
 }
 
+#user-art-gallery.empty {
+	min-height: 30rem !important;
+}
+
 .user-art-overlay-desc > .user-art-desc {
 	font-weight: bolder;
 	font-size: 1.4em;
 	line-height: 1.1em;
 	font-style: italic;
-	font-family: 'Luminari', sans-serif;
+	font-family: 'Arial', sans-serif;
 	text-shadow: #000000 2px 2px 2px;
 	margin-bottom: .7rem;
 	margin-right: .5rem;
 	margin-left: .5rem;
 	color: #ffffff;
+}
+
+#user-art-empty {
+	min-height: 30rem !important;
+}
+
+#user-art-empty h1 {
+	font-size: 5em;
+	margin-bottom: 1.5rem;
+}
+
+#user-art-empty p {
+	margin-top: 1.2rem;
+	font-size: 1.5em;
+	color: #dfdfdf;
 }
 
 /* User Personal Gallery Media Queries */
@@ -136,6 +155,9 @@
 @media only screen and (max-width: 630px) {
 	#user-art-gallery .user-art-anchor {
 		width: 50%;
+	}
+	#user-art-empty p {
+		font-size: 1.2em;
 	}
 }
 

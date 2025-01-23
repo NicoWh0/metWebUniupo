@@ -30,21 +30,6 @@ const tempStorePath = 'db_images/tmp/';
 const storePath = 'db_images/:id/';
 const imageStorePath = storePath + 'published/';
 const userImageStorePath = storePath + 'profile/';
-/*
-const imageStorage1 = multer.diskStorage(
-    {
-        destination: function(req, _file, cb) {
-            console.log('Impostando la destinazione');
-            console.log(req.body);
-            cb(null, req.body.imagePath);
-        },
-        filename: function(req, file, cb) {
-            console.log('Impostando il nome');
-            console.log(req.body);
-            cb(null, req.body.imageId + path.extname(file.originalname));
-        }
-    }
-)*/
 
 const imageStorage = multer.diskStorage(
     {
@@ -61,22 +46,6 @@ const imageStorage = multer.diskStorage(
         }
     }
 )
-/*
-const storeImage1 = multer({
-    storage: imageStorage1,
-    limits: {
-        fieldSize: 8 * 1024 * 1024 //8 MB
-    },
-    fileFilter: function(req, file, cb) {
-        console.log('Sto filtrando...');
-        console.log(req.body);
-        const extention = path.extname(file.originalname);
-        if(extention === '.jpg' || extention === '.jpeg' || extention === '.png')
-            cb(null, true);
-        cb(null, false);
-    }
-}).single('imageFile');*/
-
 
 const storeImage = multer({
     storage: imageStorage,
@@ -126,7 +95,6 @@ app.get('/imageFile/:userId/:type/:filename', (req, res) => {
     res.sendFile(filePath, (err) => {
         if (err) {
             console.error('Error sending file:', err);
-            // Send a default image or 404
             res.status(404).send('Image not found');
         }
     });
@@ -140,10 +108,6 @@ app.get('/favicon.png', (_req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'favicon.png'));
 });
 
-app.get('/etiquette', (_req, res) => {
-    res.status(200).json({etiquette: 'Comportati bene!'});
-});
-
 app.get('/categories', (req, res) => {
     return res.status(200).json({categories: req.app.get('categories')});
 });
@@ -152,8 +116,8 @@ passport.use(new LocalStrategy(
     function(username, password, done) {
         userDao.loginUser(username, password).then(({user, pass}) => {
             console.log(`user: ${user}, pass: ${pass}`);
-            if(!user) done(null, false, {message: 'Incorrect Username'});
-            else if(!pass) done(null, false, {message: 'Incorrect Password'});
+            if(!user) done(null, false, {message: 'Username non trovato.'});
+            else if(!pass) done(null, false, {message: 'Password errata.'});
             else done(null, user);
         }).catch(err => done(err));
     }
@@ -174,7 +138,13 @@ passport.deserializeUser(function(id, done) {
 app.use(session({
     secret: 'The secret sentence of this session. Must not share with anyone.',
     saveUninitialized: false,
-    resave: false
+    resave: false,
+    cookie: {
+        sameSite: 'lax',
+        httpOnly: true,
+        secure: false,
+        maxAge: 3600000 // 1 hour
+    }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -185,24 +155,10 @@ const isLogged = function(req, res, next) {
     else res.status(401).json({error: 'Not Authenticated'});
 }
 
-const isLoggedAdmin = function(req, res, next) {
-    if(req.isAuthenticated() && req.user.type === 1) next();
-    else res.status(401).json({error: 'Not Authenticated as Admin'});
-}
-
-
-//test per verificare sessione/login/logout/protezione etc. (poi da commentare o eliminare)
-app.get('/protected', (req, res, next) => {
-    if(req.isAuthenticated()) next();
-    else res.status(401).send('Non sei loggato. Pussa via.\n');
-}, (_req, res) => {
-    res.status(200).send('Ok. Sei loggato.\n');
-});
-
 app.post('/register', 
     [
         check(['username', 'email', 'password', 'confirmPassword'], 'Parametri mancanti o dal formato errato.').isString(),
-        check('username', "L'username deve essere lungo dai 4 ai 20 caratteri e può contenere solo lettere, numeri o underscore").trim().isLength({max: 20, min: 4}).matches(/[a-zA-Z0-9_]{4,20}/),
+        check('username', "L'username deve essere lungo dai 4 ai 20 caratteri e può contenere solo lettere, numeri o underscore").trim().isLength({max: 20, min: 4}).matches(/[a-zA-Z0-9_]+/),
         check('password', 'La password deve essere lunga dai 8 ai 16 caratteri e deve contenere almeno un numero, una lettera maiuscola, una lettera minuscola e un carattere speciale.').isLength({max: 16, min: 8}).isStrongPassword(),
         check('email', 'Inserire un indirizzo mail valido').trim().isEmail(),
         check('confirmPassword').custom((value, {req}) => {
@@ -243,17 +199,36 @@ app.post('/login', check(['username', 'password']).notEmpty(), function(req, res
         else {
             req.login(user, function(err) {
                 if(err) next(err);
-                console.log(req.user);
-                console.log(req.session.passport.user);
+                console.log("req.user: ", req.user);
+                console.log("req.session.passport.user: ", req.session.passport.user);
                 res.json(req.user);
             });
         }
     })(req, res, next);
 });
 
+app.post('/change-password', isLogged, 
+    check('oldPassword').isString().notEmpty(),
+    check('newPassword', 'La password deve essere lunga dai 8 ai 16 caratteri e deve contenere almeno un numero, una lettera maiuscola, una lettera minuscola e un carattere speciale.').isLength({max: 16, min: 8}).isStrongPassword(),
+    check('confirmPassword').isString().notEmpty(),
+    check('confirmPassword').custom((value, {req}) => {
+        return value === req.body.newPassword ? Promise.resolve('Ok.') : Promise.reject('La password originale e quella di conferma devono combaciare.');
+    }),
+    (req, res) => {
+        const errors = validationResult(req);
+        if(!errors.isEmpty()) return res.status(422).json({errors: errors.array()});
+        userDao.changePassword(req.user.id, req.body.oldPassword, req.body.newPassword).then(result => {
+            if(result?.error) return res.status(401).json({message: "Password errata."});
+            else res.status(200).end();
+        }).catch(err => {
+            return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
+        });
+    }
+);
+
 
 //Function to check categories
-function checkCategories(values, req ) {
+function checkCategories(values, req) {
     if (!values || values.length < 1 || values.length > 3) {
         throw new Error('Selezionare da 1 a 3 categorie.');
     }
@@ -335,8 +310,8 @@ function isMainCategory(category, serverCategories) {
 
 app.post('/images/upload', storeImage, isLogged,
     [
-        check('title', 'Il titolo deve essere lungo dai 5 ai 24 caratteri e può contenere solo lettere, numeri, underscore e spazi.').isLength({max: 24, min: 5}).matches(/[a-zA-Z0-9_\s]{5,24}/),
-        check('description', 'La descrizione deve essere lunga al massimo 128 caratteri.').isString().isLength({max: 128}),
+        check('title', 'Il titolo deve essere lungo dai 5 ai 24 caratteri e può contenere solo lettere, numeri, underscore e spazi.').isString().trim().isLength({max: 24, min: 5}).matches(/[a-zA-Z0-9_\s]+/),
+        check('description', 'La descrizione deve essere lunga al massimo 128 caratteri.').isString().trim().isLength({max: 128}),
         check('categories')
             .customSanitizer(values => {
                 // Convert single value to array
@@ -375,7 +350,7 @@ app.post('/images/upload', storeImage, isLogged,
         console.log(data);
         imageDao.uploadImage(data).then(id => {
             fs.renameSync(tempStorePath + req.body.originalfilename, data.path + id + data.extention);
-            return res.status(201).end();
+            return res.status(201).json({id});
         }).catch(err => {
             console.log('Errore nel database: ' + err);
             fs.unlinkSync(tempStorePath + req.body.originalfilename);
@@ -389,8 +364,8 @@ app.post('/images/upload', storeImage, isLogged,
 
 app.put('/images/:id', isLogged, 
     [
-        check('title', 'Il titolo deve essere lungo dai 5 ai 24 caratteri e può contenere solo lettere, numeri, underscore e spazi.').isLength({max: 24, min: 5}).matches(/[a-zA-Z0-9_\s]{5,24}/),
-        check('description', 'La descrizione deve essere lunga al massimo 128 caratteri.').isString().isLength({max: 128}),
+        check('title', 'Il titolo deve essere lungo dai 5 ai 24 caratteri e può contenere solo lettere, numeri, underscore e spazi.').isString().trim().isLength({max: 24, min: 5}).matches(/[a-zA-Z0-9_\s]+/),
+        check('description', 'La descrizione deve essere lunga al massimo 128 caratteri.').isString().trim().isLength({max: 128}),
         check('categories')
             .customSanitizer(values => {
                 // Convert single value to array
@@ -409,26 +384,40 @@ app.put('/images/:id', isLogged,
     (req, res) => {
         console.log(req.body);
         const errors = validationResult(req);
+        if(!errors.isEmpty()) return res.status(422).json({errors: errors.array()});
 
         imageDao.getImageById(req.params.id).then(image => {
             if(!image) return res.status(404).json({error: 'Image not found'});
-            if(image.author !== req.user.id && req.user.type !== 1) return res.status(403).json({error: 'Forbidden'});
+            if(image.AuthorId !== req.user.id && req.user.type !== 1) return res.status(403).json({error: 'Forbidden'});
+            const data = {
+                "title" : req.body.title,
+                "description" : req.body.description,
+                "categories" : req.categoryIds,
+                "tags" : req.body.tags.map(el => el.toLowerCase())
+            };
+            imageDao.editImage(req.params.id, data).then(_done => res.status(200).end()).catch(err => {
+                return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
+            });
         }).catch(err => {
-            return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
-        });
-        if(!errors.isEmpty()) return res.status(422).json({errors: errors.array()});
-
-        const data = {
-            "title" : req.body.title,
-            "description" : req.body.description,
-            "categories" : req.categoryIds,
-            "tags" : req.body.tags.map(el => el.toLowerCase())
-        };
-        imageDao.editImage(req.params.id, data).then(_done => res.status(200).end()).catch(err => {
             return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
         });
     }
 );
+
+app.delete('/images/:id', isLogged, (req, res) => {
+    imageDao.getImageById(req.params.id).then(image => {
+        if(image.AuthorId !== req.user.id && req.user.type !== 1) return res.status(403).json({error: 'Forbidden'});
+        console.log("Deleting image: " + image.ImagePath);
+        fs.unlinkSync(image.ImagePath);
+        imageDao.deleteImageById(req.params.id).then(_done => {
+            return res.status(200).end();
+        }).catch(err => {
+            return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
+        });
+    }).catch(err => {
+        return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
+    });
+});
 
 app.post('/users/:id/avatar', storeImage, isLogged, (req, res) => {
     console.log(req.body);
@@ -577,27 +566,42 @@ app.get('/images/:id/likes', (req, res) => {
     ); 
 });
 
-app.post('/images/:id/comments', isLogged, check('content', 'Il testo del commento deve essere lungo al massimo 128 caratteri.').isLength({max: 128, min: 1}), (req, res) => {
-    console.log(req.body);
-    const errors = validationResult(req);
-    if(!errors.isEmpty()) return res.status(422).json({errors: errors.array()});
-    commentDao.addComment(req.user.id, req.params.id, req.body.content).then(result => res.status(201).json({id: result})).catch(err => {
-        return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
-    });
-});
+app.post('/images/:id/comments', isLogged, check('content', 'Il testo del commento deve essere lungo al massimo 128 caratteri.').isLength({max: 128, min: 1}), 
+    (req, res) => {
+        console.log(req.body);
+        const errors = validationResult(req);
+        if(!errors.isEmpty()) return res.status(422).json({errors: errors.array()});
+        commentDao.addComment(req.user.id, req.params.id, req.body.content).then(result => res.status(201).json({id: result})).catch(err => {
+            return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
+        });
+    }
+);
 
-app.put('/images/:id/comments/:commentId', isLogged, check('content').notEmpty(), (req, res) => {
+app.put('/images/:id/comments/:commentId', isLogged, check('content', 'Il testo del commento deve essere lungo al massimo 128 caratteri.').isString().isLength({max: 128, min: 1}), 
+    (req, res) => {
+        const errors = validationResult(req);
+        if(!errors.isEmpty()) return res.status(422).json({errors: errors.array()});
+        commentDao.getCommentAuthor(req.params.commentId).then(author => {
+            if(author === req.user.id || req.user.type === 1) { //se l'utente è l'autore del commento o è admin 
+                commentDao.editComment(req.params.commentId, req.body.content).then(_done => res.status(200).end()).catch(err => {
+                    return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
+                });
+            }
+            else return res.status(403).json({error: 'Forbidden'});
+        }).catch(err => {
+            return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
+        });
+    }
+);
+
+app.delete('/images/:id/comments/:commentId', isLogged, (req, res) => {
     commentDao.getCommentAuthor(req.params.commentId).then(author => {
-        //console.log("Author: " + author);
-        //console.log("User: " + req.user.id);
-        if(author === req.user.id || req.user.type === 1) { //se l'utente è l'autore del commento o è admin
-            const errors = validationResult(req);
-            if(!errors.isEmpty()) return res.status(422).json({errors: errors.array()});
-            commentDao.editComment(req.params.commentId, req.body.content).then(_done => res.status(201).end()).catch(err => {
+        if(author === req.user.id || req.user.type === 1) { //se l'utente è l'autore del commento o è admin 
+            commentDao.deleteComment(req.params.commentId).then(_done => res.status(201).end()).catch(err => {
                 return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
             });
         }
-        else return res.status(401).json({error: 'Not Authorized'});
+        else return res.status(403).json({error: 'Forbidden'});
     }).catch(err => {
         return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
     });
@@ -621,6 +625,7 @@ app.get('/images/:id/comments/:commentId/isliked', isLogged, (req, res) => {
     });
 });
 
+
 app.get('/users/me', (req, res) => {
     if(!req.isAuthenticated()) return res.status(404).json({error: 'User not found'});
     userDao.getUserInfoById(req.user.id).then(user => {
@@ -630,19 +635,14 @@ app.get('/users/me', (req, res) => {
     });
 });
 
-app.delete('/users/:id', isLogged, (req, res, next) => {
-    if(req.user.id != req.params.id) return res.status(403).json({error: 'Forbidden'});
-    userDao.deleteUser(req.params.id).then(id => {
-        fs.rmSync(storePath.replace(':id', id), {recursive: true});
-        req.logOut(function(err) {
-            if(err) next(err);
-            return res.status(200).json({message: 'User deleted.'});
-        });
+app.get('/users/:id', (req, res) => {
+    userDao.getUserInfoById(req.params.id).then(user => {
+        if(!user) return res.status(404).json({error: 'User not found'});
+        return res.status(200).json(user);
     }).catch(err => {
         return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
     });
 });
-
 
 app.delete('/logout', (req, res, next) => {
     req.logOut(function(err) { 
@@ -651,17 +651,7 @@ app.delete('/logout', (req, res, next) => {
     });
 });
 
-/*
-app.use((err, req, res, next) => {
-    console.log(req.body);
-    if(req.body['imageId']) {
-        imageDao.deleteImageById(req.body['imageId']).then(_done => next(err)).catch(dbErr => {
-            return res.status(500).json({errors: {'Param' : 'Server', 'messages' : [err, dbErr]}});
-        });
-    }
-    else next(err);
-})*/
-
+//serve the index.html file for all routes (client side routing)
 app.get('*', (_req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });

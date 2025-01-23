@@ -295,7 +295,7 @@ class UploadModal {
 
         try {
             // Send the data to the server
-            await API.uploadImage(formData);
+            const newId = await API.uploadImage(formData);
             console.log('Upload successful:');
             
             // Show success message
@@ -303,6 +303,11 @@ class UploadModal {
 
             // Clear the form fields
             this.clearForm();
+
+            // Redirect to page with new image
+            setTimeout(() => {
+                window.location.href = `/image/${newId}`;
+            }, 1000);
 
         } catch (error) {
             console.error('Upload failed:', error);

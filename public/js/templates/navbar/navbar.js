@@ -40,7 +40,7 @@ class Navbar {
                                     <div class="col-sm-12">
                                         <li class="list-group offcanvas-small-menu">
                                             <ul class="list-group-item offcanvas-small-menu-item">
-                                                <a class="small-menu-item-anchor" href="#">Modifica Profilo</a>
+                                                <button class="small-menu-item-btn btn" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Modifica Credenziali</button>
                                             </ul>
                                             <ul class="list-group-item offcanvas-small-menu-item">
                                                 <button class="small-menu-item-btn btn" id="logout-button-offcanvas">Logout</button>
@@ -93,7 +93,7 @@ class Navbar {
                         <div id="user-dropdown-menu" class="dropdown-menu">
                             <h5 class="dropdown-header">${this.user.username}</h5>
                             <a class="dropdown-item" href="user.html">Visualizza Profilo</a>
-                            <a class="dropdown-item" href="#">Modifica Profilo</a>
+                            <button class="dropdown-btn btn" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Modifica Credenziali</button>
                             <div class="dropdown-divider"></div>
                             <button class="dropdown-btn btn" id="logout-button">Logout</button>
                         </div>

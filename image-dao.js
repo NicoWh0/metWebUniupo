@@ -123,8 +123,6 @@ class ImageDao {
 
     deleteImageById(id) {
         return new Promise((resolve, reject) => {
-            console.log('Cancello immagine...');
-            console.log(id);
             const sql = 'DELETE FROM Image WHERE Id = ?'
             db.run(sql, [id], function(err) {
                 if(err) reject(err);

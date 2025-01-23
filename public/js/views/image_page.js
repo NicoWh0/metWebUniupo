@@ -102,6 +102,7 @@ class ImagePage {
         if(modalsContainer && this.imageData.editable) {
             // Create and add edit image modal
             const editImageModal = new EditImageModal({
+                id: this.imageData.Id,
                 title: this.imageData.Title,
                 description: this.imageData.Description,
                 categories: this.imageCategories,
@@ -109,18 +110,27 @@ class ImagePage {
             });        
             modalsContainer.insertAdjacentHTML('beforeend', editImageModal.render());
             editImageModal.attachEventListeners();
-            
+            this.modals.push(bootstrap.Modal.getOrCreateInstance(document.getElementById('editImage')));
+            this.modals.push(bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteConfirmModal')));
+        }
+        if(modalsContainer && appState.auth.isLoggedIn) {
             // Create and add edit comment modal
             const editCommentModal = new EditCommentModal();    
             modalsContainer.insertAdjacentHTML('beforeend', editCommentModal.render());
-            //editCommentModal.attachEventListeners();
-
+            
+            // Store the modal instance reference in both modals' content
+            const editCommentElement = document.getElementById('editComment');
+            const deleteCommentElement = document.getElementById('deleteCommentConfirmModal');
+            
+            editCommentElement.querySelector('.modal-content').__component = editCommentModal;
+            
+            editCommentModal.attachEventListeners();
+            
             // Store Bootstrap modal instances for cleanup
-            this.modals = [
-                bootstrap.Modal.getOrCreateInstance(document.getElementById('editImage')),
-                bootstrap.Modal.getOrCreateInstance(document.getElementById('deleteConfirmModal')),
-                bootstrap.Modal.getOrCreateInstance(document.getElementById('editComment'))
-            ];
+            this.modals.push(
+                bootstrap.Modal.getOrCreateInstance(editCommentElement),
+                bootstrap.Modal.getOrCreateInstance(deleteCommentElement)
+            );
         }
     }
 

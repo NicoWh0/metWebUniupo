@@ -63,11 +63,11 @@ class UserDao {
 
     getUserInfoById(id) {
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT Username, UserImage, Type FROM User WHERE Id = ?';  
+            const sql = 'SELECT Username, UserImage, Type, Email FROM User WHERE Id = ?';  
             db.get(sql, [id], function(err, row) {
                 if(err) reject(err);
-                else if(!row) resolve({error: 'User not found.'});
-                else resolve({id: id, username: row.Username, userimage: row.UserImage, type: row.Type});
+                else if(!row) resolve();
+                else resolve({id: id, username: row.Username, userimage: row.UserImage, type: row.Type, email: row.Email});
             })
         });
     }

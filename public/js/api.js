@@ -1,6 +1,8 @@
-class API {
-    static BASE_URL = ''; // Empty since we're using relative paths
+"use strict";
 
+class API {
+
+    
     static headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -20,7 +22,7 @@ class API {
             return user;
         } catch (error) {
             console.error('Error fetching current user:', error);
-            return null;
+            throw error;
         }
     }
 
@@ -94,7 +96,6 @@ class API {
         try {
             const response = await fetch(`/images/${imageId}/isliked`, { headers: this.headers });
             const data = await response.json();
-            console.log("Is image liked: ", data.isLiked);
             return data.isLiked;
         } catch (error) {
             console.error('Error checking if image is liked:', error);
@@ -108,6 +109,17 @@ class API {
                 method: 'POST',
                 headers: this.headers
             });
+            if(!response.ok) {
+                if(response.status === 401) {
+                    throw new Error('Utente non autenticato.', { cause: response.status });
+                }
+                else if(response.status === 404) {
+                    throw new Error('Immagine non trovata.', { cause: response.status });
+                }
+                else {
+                    throw new Error('Errore lato server. Riprova più tardi.', { cause: response.status });
+                }
+            }
             return response;
         } catch (error) {
             console.error('Error liking image:', error);
@@ -121,6 +133,17 @@ class API {
                 method: 'DELETE',
                 headers: this.headers
             });
+            if(!response.ok) {
+                if(response.status === 401) {
+                    throw new Error('Utente non autenticato.', { cause: response.status });
+                }
+                else if(response.status === 404) {
+                    throw new Error('Immagine non trovata.', { cause: response.status });
+                }
+                else {
+                    throw new Error('Errore lato server. Riprova più tardi.', { cause: response.status });
+                }
+            }
             return response;
         } catch (error) {
             console.error('Error unliking image:', error);
@@ -133,16 +156,48 @@ class API {
             const response = await fetch(`/images/${id}`, { headers: this.headers });
             if(!response.ok) {
                 if(response.status === 404) {
-                    throw new Error('Image not found', { cause: response.status });
+                    throw new Error('Immagine non trovata.', { cause: response.status });
                 }
                 else {
-                    throw new Error('Error fetching image by id', { cause: response.status });
+                    throw new Error('Errore lato server. Riprova più tardi.', { cause: response.status });
                 }
             }
             const data = await response.json();
             return data;
         } catch (error) {
             console.error('Error fetching image by id:', error);
+            throw error;
+        }
+    }
+
+    static async uploadImage(data) {
+        try {
+            const response = await fetch('/images/upload', {
+                method: 'POST',
+                headers: this.multipartHeaders,
+                body: data
+            });
+
+            if (!response.ok) {
+                if(response.status === 401) {
+                    throw new Error('Utente non autenticato.', { cause: response.status });
+                }
+                else if(response.status === 422) {
+                    const json = await response.json();
+                    const errors = json.errors;
+                    const message = 'I seguenti campi non sono validi: ' + errors.map(
+                        error => error.path
+                    ).join(', ');
+                    throw new Error(message, { cause: response.status });
+                }
+                else {
+                    throw new Error('Errore lato server. Riprova più tardi.', { cause: response.status });
+                }
+            }
+            const uploadedImage = await response.json();
+            return uploadedImage.id;
+        } catch (error) {
+            console.error('Upload Image error: ', error);
             throw error;
         }
     }
@@ -155,7 +210,26 @@ class API {
                 body: JSON.stringify(data)
             });
             if(!response.ok) {
-                throw new Error('Error editing image', { cause: response.status });
+                if(response.status === 401) {
+                    throw new Error('Utente non autenticato.', { cause: response.status });
+                }
+                else if(response.status === 403) {
+                    throw new Error('Non hai i permessi per modificare questa immagine.', { cause: response.status });
+                }
+                else if(response.status === 404) {
+                    throw new Error('Immagine non trovata.', { cause: response.status });
+                }
+                else if(response.status === 422) {
+                    const json = await response.json();
+                    const errors = json.errors;
+                    const message = 'I seguenti campi non sono validi: ' + errors.map(
+                        error => error.path
+                    ).join(', ');
+                    throw new Error(message, { cause: response.status });
+                }
+                else {
+                    throw new Error('Errore lato server. Riprova più tardi.', { cause: response.status });
+                }
             }
             return response;
         } catch (error) {
@@ -164,11 +238,21 @@ class API {
         }
     }
 
+    static async deleteImage(id) {
+        try {
+            const response = await fetch(`/images/${id}`, { method: 'DELETE', headers: this.headers });
+            return response;
+        } catch (error) {
+            console.error('Error deleting image:', error);
+            throw error;
+        }
+    }
+
     static async getTagsByImageId(id) {
         try {
             const response = await fetch(`/images/${id}/tags`, { headers: this.headers });
             if(!response.ok) {
-                throw new Error('Error fetching tags by image id', { cause: response.status });
+                throw new Error('Errore lato server. Riprova più tardi.', { cause: response.status });
             }
             const data = await response.json();
             return data;
@@ -185,7 +269,7 @@ class API {
         try {
             const response = await fetch(`/images/${id}/categories`, { headers: this.headers });
             if(!response.ok) {
-                throw new Error('Error fetching categories by image id', { cause: response.status });
+                throw new Error('Errore lato server. Riprova più tardi.', { cause: response.status });
             }
             const data = await response.json();
             return data;
@@ -221,6 +305,43 @@ class API {
             return data.id;
         } catch (error) {
             console.error('Error adding comment:', error);
+            throw error;
+        }
+    }
+
+    static async updateComment(imageId, commentId, content) {
+        console.log("imageId, commentId, content: ", imageId, commentId, content);
+        try {
+            const response = await fetch(`/images/${imageId}/comments/${commentId}`, {
+                method: 'PUT',
+                headers: this.headers,
+                body: JSON.stringify({ content })
+            });
+            if(!response.ok) {
+                if(response.status === 401) {
+                    throw new Error('Utente non autenticato.', { cause: response.status });
+                }
+                else if(response.status === 403) {
+                    throw new Error('Non hai i permessi per modificare questo commento.', { cause: response.status });
+                }
+                else {
+                    throw new Error('Errore lato server. Riprova più tardi.', { cause: response.status });
+                }
+            }
+            return response;
+        } catch (error) {
+            console.error('Error updating comment:', error);
+            throw error;
+        }
+    }
+
+    static async deleteComment(imageId, commentId) {
+        console.log("imageId, commentId: ", imageId, commentId);
+        try {
+            const response = await fetch(`/images/${imageId}/comments/${commentId}`, { method: 'DELETE', headers: this.headers });
+            return response;
+        } catch (error) {
+            console.error('Error deleting comment:', error);
             throw error;
         }
     }
@@ -322,7 +443,7 @@ class API {
             return user;
         } catch (error) {
             console.error('Login error:', error);
-            throw error; 
+            throw error;
         }
     }
 
@@ -332,7 +453,7 @@ class API {
                 method: 'DELETE',
                 headers: this.headers
             });
-    
+
             if (!response.ok) {
                 const error = await response.json();
                 throw new Error(error.message || 'Logout failed', { cause: response.status });
@@ -341,25 +462,46 @@ class API {
             console.error('Logout error:', error);
             throw error;
         }
-        
     }
 
-    static async uploadImage(data) {
+    static async getUser(id) {
         try {
-            const response = await fetch('/images/upload', {
-                method: 'POST',
-                headers: this.multipartHeaders,
-                body: data
-            });
-
+            const response = await fetch(`/users/${id}`, { headers: this.headers });
             if(!response.ok) {
-                const error = await response.json();
-                throw new Error(error.message || 'Upload Image failed', { cause: response.status });
+                if(response.status === 404) {
+                    throw new Error('Utente non trovato.', { cause: response.status });
+                }
+                else {
+                    throw new Error('Errore lato server. Riprova più tardi.', { cause: response.status });
+                }
             }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            if(!error.cause === 404) console.error('Error fetching user:', error);
+            throw error;
+        }
+    }
 
+
+    static async changePassword(oldPassword, newPassword, confirmPassword) {
+        try {
+            const response = await fetch('/change-password', {
+                method: 'POST',
+                headers: this.headers,
+                body: JSON.stringify({ oldPassword, newPassword, confirmPassword })
+            });
+            if(!response.ok) {
+                if(response.status === 401) {
+                    throw new Error('Vecchia password errata.', { cause: response.status });
+                }
+                else {
+                    throw new Error('Errore lato server. Riprova più tardi.', { cause: response.status });
+                }
+            }
             return response;
         } catch (error) {
-            console.error('Upload Image error: ', error);
+            console.error('Error changing password:', error);
             throw error;
         }
     }

@@ -7,6 +7,7 @@ import LoadingScreen from '../templates/others/loading_screen.js';
 import { appState } from '../app.js';
 import API from '../api.js';
 import { initializeCategoryScroller } from '../scripts/categories_scrolling.js';
+import ChangePasswordModal from '../templates/modals/change_password_modal.js';
 
 export class HomeView {
     constructor() {
