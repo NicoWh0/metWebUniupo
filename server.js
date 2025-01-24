@@ -2,13 +2,9 @@
 // import package
 const express = require('express') ;
 const morgan = require('morgan');
-const moment = require('moment');
 const path = require('path');
-const cookieParser = require('cookie-parser');
 const fs = require('fs');
-//const fileUpload = require('express-fileupload');
 const multer = require('multer');
-//const bodyParser = require('bodyparser');
 
 
 const passport = require('passport');
@@ -29,7 +25,6 @@ const port = 3000;
 const tempStorePath = 'db_images/tmp/';
 const storePath = 'db_images/:id/';
 const imageStorePath = storePath + 'published/';
-const userImageStorePath = storePath + 'profile/';
 
 const imageStorage = multer.diskStorage(
     {
@@ -87,7 +82,7 @@ app.get('/imageFile/:userId/:type/:filename', (req, res) => {
         __dirname,
         'db_images',
         userId,
-        type, // 'published' or 'profile'
+        type, // 'published' is the default
         filename
     );
 
@@ -152,8 +147,9 @@ app.use(passport.session());
 
 const isLogged = function(req, res, next) {
     if(req.isAuthenticated()) next();
-    else res.status(401).json({error: 'Not Authenticated'});
+    else res.status(401).json({error: 'Non autenticato.'});
 }
+//Il check se è admin è fatto già nelle routes
 
 app.post('/register', 
     [
@@ -173,7 +169,6 @@ app.post('/register',
         
         userDao.registerUser(req.body).then(id => {
             fs.mkdirSync(imageStorePath.replace(':id', id), {recursive: true});
-            fs.mkdirSync(userImageStorePath.replace(':id', id), {recursive: true});
             return res.status(201).end();
         }).catch(err => {
             if(err.errno === 19 && err.code === 'SQLITE_CONSTRAINT' && err.message.match(/UNIQUE constraint failed/)) {
@@ -418,47 +413,6 @@ app.delete('/images/:id', isLogged, (req, res) => {
         return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
     });
 });
-
-app.post('/users/:id/avatar', storeImage, isLogged, (req, res) => {
-    console.log(req.body);
-    if(!req.file) return res.status(422).json({error: 'No file was uploaded'});
-    if(req.user.id != req.params.id) return res.status(401).json({error: 'Not Authorized'});
-
-    const avatarPath = userImageStorePath.replace(':id', req.user.id) + 'avatar' + path.extname(req.body.originalfilename);
-    userDao.changeUserImage(req.params.id, avatarPath).then(_done => {
-        for(const ext of ['.png', '.jpg', '.jpeg']) {
-            if(fs.existsSync(userImageStorePath.replace(':id', req.user.id) + 'avatar' + ext))
-                fs.unlinkSync(userImageStorePath.replace(':id', req.user.id) + 'avatar' + ext);
-        }
-        fs.renameSync(tempStorePath + req.body.originalfilename, avatarPath);
-        return res.status(201).end();
-    }).catch(err => {
-        console.log('Errore nel database: ' + err);
-        fs.unlinkSync(tempStorePath + req.body.originalfilename);
-        return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
-    });
-});
-
-app.post('/users/:id/cover', storeImage, isLogged, (req, res) => {
-    console.log(req.body);
-    if(!req.file) return res.status(422).json({error: 'No file was uploaded'});
-    if(req.user.id != req.params.id) return res.status(401).json({error: 'Not Authorized'});
-
-    const coverPath = userImageStorePath.replace(':id', req.user.id) + 'cover' + path.extname(req.body.originalfilename);
-    userDao.changeUserCover(req.params.id, coverPath).then(_done => {
-        for(const ext of ['.png', '.jpg', '.jpeg']) {
-            if(fs.existsSync(userImageStorePath.replace(':id', req.user.id) + 'cover' + ext))
-                fs.unlinkSync(userImageStorePath.replace(':id', req.user.id) + 'cover' + ext);
-        }
-        fs.renameSync(tempStorePath + req.body.originalfilename, coverPath);
-        return res.status(201).end();
-    }).catch(err => {
-        console.log('Errore nel database: ' + err);
-        fs.unlinkSync(tempStorePath + req.body.originalfilename);
-        return res.status(500).json({errors: {'Param' : 'Server', 'message' : err}});
-    });
-});
-
 
 app.get('/images/search', (req, res) => {
     console.log(req.query);

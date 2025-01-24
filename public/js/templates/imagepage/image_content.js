@@ -46,7 +46,7 @@ class ImageContent {
                         </div>
                         <div id="author-row" class="d-flex flex-row justify-content-between">
                             <span id="author-intro">di:</span>
-                            <span id="author">${this.imageData.AuthorName}</span>
+                            <span id="author"><a href="/user/${this.imageData.AuthorId}">${this.imageData.AuthorName}</a></span>
                         </div>
                         <div id="date-row" class="d-flex flex-row align-items-center mt-2">
                             <span id="date-intro" class="me-2">Pubblicato il:</span>

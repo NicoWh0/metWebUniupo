@@ -49,7 +49,12 @@
 	background-color: inherit;
 }
 
-#user-info #user-name::selection, #user-info #user-description::selection, #user-info #user-mail::selection {
+#user-info #user-signed-up {
+	font-weight: lighter;
+	font-style: italic;
+}
+
+#user-info #user-name::selection, #user-info #user-description::selection, #user-info #user-mail::selection, #user-info #user-signed-up::selection {
 	background-color: #0f0fd4;
 	color: #ffffff;
 	text-shadow: none;

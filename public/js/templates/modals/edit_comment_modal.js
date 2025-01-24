@@ -35,7 +35,7 @@ class EditCommentModal {
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
                             <button type="button" class="btn btn-danger" id="delete-comment-btn">Elimina</button>
-                            <button type="submit" form="edit-comment-form" class="btn btn-primary">Salva modifiche</button>
+                            <button type="submit" form="edit-comment-form" class="btn btn-primary sign-in-up-btn">Salva modifiche</button>
                         </div>
                     </div>
                 </div>

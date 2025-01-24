@@ -27,7 +27,7 @@ class UserDao {
 
     loginUser(username, password) {
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT Id, Username, UserImage, HashPassword, Type FROM User WHERE Username = ?';
+            const sql = 'SELECT Id, Username, HashPassword, Type FROM User WHERE Username = ?';
             db.get(sql, [username], function(err, row) {
                 if(err) reject(err);
                 else if(!row) resolve({user: false, pass: undefined});
@@ -63,11 +63,11 @@ class UserDao {
 
     getUserInfoById(id) {
         return new Promise((resolve, reject) => {
-            const sql = 'SELECT Username, UserImage, Type, Email FROM User WHERE Id = ?';  
+            const sql = 'SELECT Username, Type, Email, DateTimeSignedUp AS SignedUp FROM User WHERE Id = ?';  
             db.get(sql, [id], function(err, row) {
                 if(err) reject(err);
                 else if(!row) resolve();
-                else resolve({id: id, username: row.Username, userimage: row.UserImage, type: row.Type, email: row.Email});
+                else resolve({id: id, username: row.Username, type: row.Type, email: row.Email, signedUp: row.SignedUp});
             })
         });
     }
@@ -113,16 +113,6 @@ class UserDao {
         return new Promise((resolve, reject) => {
             const sql = 'UPDATE User SET Username = ? WHERE Id = ?';
             db.run(sql, [newUsername, id], function(err) {
-                if(err) reject(err);
-                else resolve();
-            })
-        })
-    }
-
-    changeUserImage(id, userImage) {
-        return new Promise((resolve, reject) => {
-            const sql = 'UPDATE User SET UserImage = ? WHERE Id = ?';
-            db.run(sql, [userImage, id], function(err) {
                 if(err) reject(err);
                 else resolve();
             })

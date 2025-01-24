@@ -151,7 +151,7 @@ class Comments {
                 <div class="card-container d-flex flex-column">
                     <div class="card">
                         <div class="card-body bg-dark d-flex flex-column justify-content-between">
-                            <span class="card-title">${comment.Username}</span>
+                            <span class="card-title"><a href="/user/${comment.UserId}">${comment.Username}</a></span>
                             <p class="card-text">${comment.Content}</p>
                         </div>
                     </div>

@@ -1,5 +1,6 @@
 "use strict";
 import API from "../../api.js";
+import { appState } from "../../app.js";
 
 class Navbar {
     constructor(user) {
@@ -27,7 +28,7 @@ class Navbar {
                             ${
                                 this.user ? `
                                     <div class="col-sm-12">
-                                        <a id="offcanvas-user-anchor" href="user.html">
+                                        <a id="offcanvas-user-anchor" href="/user/${this.user.id}">
                                             <div id="offcanvas-user-wrapper">
                                                 <svg class="rounded-circle" id="offcanvas-user-image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
                                                     <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
@@ -92,7 +93,7 @@ class Navbar {
                         </a>
                         <div id="user-dropdown-menu" class="dropdown-menu">
                             <h5 class="dropdown-header">${this.user.username}</h5>
-                            <a class="dropdown-item" href="user.html">Visualizza Profilo</a>
+                            <a class="dropdown-item" href="/user/${this.user.id}">Visualizza Profilo</a>
                             <button class="dropdown-btn btn" data-bs-toggle="modal" data-bs-target="#changePasswordModal">Modifica Credenziali</button>
                             <div class="dropdown-divider"></div>
                             <button class="dropdown-btn btn" id="logout-button">Logout</button>
@@ -156,6 +157,14 @@ class Navbar {
                 if (document.body.clientWidth > 910 && bsOffcanvas) {
                    bsOffcanvas.hide();
                 }
+            });
+        }
+
+        const offCanvasUserAnchor = document.getElementById('offcanvas-user-anchor');
+        if (offCanvasUserAnchor) {
+            const bsOffcanvas = new bootstrap.Offcanvas(offcanvas);
+            offCanvasUserAnchor.addEventListener('click', () => {
+                bsOffcanvas.hide();
             });
         }
     }

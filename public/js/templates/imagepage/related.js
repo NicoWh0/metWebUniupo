@@ -81,7 +81,7 @@ class Related {
             </div>
             <div class="d-flex flex-column h-50 align-content-center justify-content-start">
                 <div id="related-more-by-wrapper" class="d-flex flex-row align-items-end">
-                    <h3 id="more-by-title">Altro da ${this.imageData.AuthorName}</h3>
+                    <a id="more-by-title" href="/user/${this.imageData.AuthorId}">Altro da ${this.imageData.AuthorName}</a>
                 </div>
                 <div class="container-fluid">
                     ${this.#renderAuthorImages()}

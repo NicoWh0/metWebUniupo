@@ -19,10 +19,13 @@ class ChangePasswordModal {
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="change-password-form">
+                            <form id="change-password-form" novalidate>
                                 <div class="form-group mb-3">
                                     <label for="old-password" class="col-form-label">Vecchia Password<span class="text-danger">*</span>:</label>
                                     <input type="password" class="form-control" id="old-password" maxlength="16" required>
+                                    <div class="invalid-feedback">
+                                        Inserire la propria vecchia password.
+                                    </div>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="new-password" class="col-form-label">Nuova Password<span class="text-danger">*</span>:</label>
@@ -37,8 +40,8 @@ class ChangePasswordModal {
                                     </div>
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="confirm-password" class="col-form-label">Conferma Password<span class="text-danger">*</span>:</label>
-                                    <input type="password" class="form-control" id="confirm-password" minlength="8" maxlength="16" required>
+                                    <label for="confirm-password-change" class="col-form-label">Conferma Password<span class="text-danger">*</span>:</label>
+                                    <input type="password" class="form-control" id="confirm-password-change" minlength="8" maxlength="16" required>
                                     <div class="invalid-feedback">
                                         Le password non coincidono.
                                     </div>
@@ -48,7 +51,7 @@ class ChangePasswordModal {
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
-                            <button type="submit" form="change-password-form" class="btn btn-primary">Salva</button>
+                            <button type="submit" form="change-password-form" class="btn btn-primary sign-in-up-btn">Salva</button>
                         </div>
                     </div>
                 </div>
@@ -61,13 +64,13 @@ class ChangePasswordModal {
         const modal = document.getElementById('changePasswordModal');
         const oldPasswordInput = document.getElementById('old-password');
         const newPasswordInput = document.getElementById('new-password');
-        const confirmPasswordInput = document.getElementById('confirm-password');
+        const confirmPasswordInput = document.getElementById('confirm-password-change');
 
 
         modal.addEventListener('hidden.bs.modal', () => {
             form.reset();
             form.classList.remove('was-validated');
-            oldPassword.setCustomValidity('');
+            oldPasswordInput.setCustomValidity('');
             newPasswordInput.setCustomValidity('');
             confirmPasswordInput.setCustomValidity('');
         });
@@ -115,6 +118,7 @@ class ChangePasswordModal {
             e.preventDefault();
             e.preventDefault();
             validatePassword();
+            form.classList.add('was-validated');
             if (!form.checkValidity()) {
                 e.stopPropagation();
                 return;
@@ -143,15 +147,15 @@ class ChangePasswordModal {
                 }, 1000);
 
             } catch (error) {
-                console.error('Password change failed:', error);
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'alert alert-danger mt-2';
                 errorDiv.textContent = error.message || 'Modifica password fallita. Riprova.';
                 form.appendChild(errorDiv);
+                oldPasswordInput.value = '';
 
                 setTimeout(() => {
                     errorDiv.remove();
-                }, 3000);
+                }, 5000);
             }
         });
 

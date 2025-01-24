@@ -96,12 +96,15 @@
 	padding-right: 1rem;
 }
 
-#author-row > #author {
+#author-row > #author > a {
+	text-decoration: none;
+	color: inherit;
 	cursor: pointer;
 	font-weight: bolder;
+	transition: all .2s ease;
 }
 
-#author-row > #author:hover {
+#author-row > #author > a:hover {
 	color: #eb9d0c;
 }
 
@@ -195,7 +198,6 @@
 	height: auto;
 	fill: #ffffff;
 	user-select: none;
-	cursor: pointer;
 }
 
 #comments-column {
@@ -272,16 +274,19 @@
 	border-color: inherit;
 }
 
-.card .card-title {
+.card .card-title a {
 	font-weight: bolder;
 	font-style: italic;
+	text-decoration: none;
+	color: inherit;
 	font-size: 1.1em;
 	cursor: pointer;
 	user-select: none;
 	width: min-content;
+	transition: all .2s ease;
 }
 
-.card .card-title:hover {
+.card .card-title a:hover {
 	color: #e29911; 
 }
 
@@ -307,7 +312,11 @@
 }
 
 #related-more-by-wrapper > #more-by-title {
+	color: inherit;
+	text-decoration: none;
 	font-family: 'Luminari', sans-serif;
+	font-size: 1.3em;
+	font-weight: bolder;
 	cursor: pointer;
 }
 

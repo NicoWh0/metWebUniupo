@@ -1,7 +1,7 @@
 Utente		Password	Email							Tipo
 
-NicoWho		GroundArt!1	nico.bianchetto@gmail.com				Admin
+NicoWho		Password1!	nico.bianchetto@gmail.com				Admin
 Celeste_	GroundArt!2	celestehuffman@gmail.com				Admin
 crow32		CrowCrow!32	crow32@hotmail.com					Normale
 Marco_C		Upo@Upo23	marcoc@upo.it						Normale
-Sara98		PincoPallo98!	sara98@gmail.com					Normale
+Sara98		Password1!	sara98@gmail.com					Normale

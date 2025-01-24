@@ -18,6 +18,7 @@ class UserHeader {
                     <div class="card-body">
                         <div id="user-name" class="card-header">${this.user.username}</div>
                         <div id="user-mail" class="card-footer">${this.user.email}</div>
+                        <div id="user-signed-up" class="card-footer">Utente dal ${new Date(this.user.signedUp).toLocaleDateString()}</div>
                     </div>
                 </div>
             </div>

@@ -10,6 +10,8 @@ import ChangePasswordModal from './templates/modals/change_password_modal.js';
 import SearchPage from './views/search_page.js';
 import NotFound from './templates/others/not_found.js';
 import ImagePage from './views/image_page.js';
+import UserPage from './views/user_page.js';
+
 // App state management
 const appState = {
     auth: {
@@ -68,6 +70,12 @@ page.exit('/image/:id', async (ctx, next) => {
     document.getElementsByTagName('body')[0].style.overflow = null;
     document.getElementsByTagName('body')[0].style.paddingRight = null;
     next();
+});
+
+page('/user/:id', async (ctx) => {
+    const userPage = new UserPage();
+    document.title = 'GroundArt - User';
+    await userPage.mount(ctx.params.id);
 });
 
 page.exit('*', async (_, next) => {

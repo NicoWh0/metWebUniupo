@@ -5,7 +5,7 @@ import API from '../../api.js';
 class RegisterModal {
     render() {
         return `
-            <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+            <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel">
                 <div class="modal-dialog">
                     <div class="modal-content standard-background">
                         <div class="modal-header">
