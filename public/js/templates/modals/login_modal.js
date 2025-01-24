@@ -117,14 +117,14 @@ class LoginModal {
                     window.location.reload();
 
                 } catch (error) {
-                    // Set custom validity to trigger invalid state
-                    usernameInput.setCustomValidity('Invalid credentials');
-                    passwordInput.setCustomValidity('Invalid credentials');
+                    // Empty the username and password fields (also trigger invalid state)
+                    usernameInput.value = '';
+                    passwordInput.value = '';
 
                     // Show error message
                     const errorDiv = document.createElement('div');
                     errorDiv.className = 'alert alert-danger mt-3';
-                    errorDiv.textContent = error.message || 'Login failed. Please try again.';
+                    errorDiv.textContent = error.message || 'Login fallito. Riprova più tardi.';
                     form.appendChild(errorDiv);
 
                     setTimeout(() => errorDiv.remove(), 10000);

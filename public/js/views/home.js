@@ -51,6 +51,9 @@ export class HomeView {
 
             await this.#updateComponents();
 
+            // Attach search gallery event listener (only on home page)
+            this.searchGallery.attachEventListeners();
+
         } catch (error) {
             console.error('Error rendering home page:', error);
             // Show error message to user

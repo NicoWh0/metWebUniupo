@@ -82,6 +82,23 @@ class SearchGallery {
             `;
         }
     }
+
+    //Only on home page!
+    attachEventListeners() {
+        //Hide last two images on resize if width < 1120px and > 920px (4 images per row)
+        const searchResultGallery = document.getElementById('search-result-gallery');
+        const lastImage = searchResultGallery.lastElementChild;
+        const preLastImage = lastImage.previousElementSibling;
+        window.addEventListener('resize', () => {
+            if(window.innerWidth < 1120 && window.innerWidth > 920) {
+                lastImage.style.display = 'none';
+                preLastImage.style.display = 'none';
+            } else {
+                lastImage.style.display = 'block';
+                preLastImage.style.display = 'block';
+            }
+        });
+    }
 }
 
 export default SearchGallery;

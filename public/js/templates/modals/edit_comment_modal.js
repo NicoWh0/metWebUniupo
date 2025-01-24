@@ -83,7 +83,6 @@ class EditCommentModal {
     }
 
     attachEventListeners() {
-        console.log("Attaching event listeners to edit comment modal");
         const editModal = document.getElementById('editComment');
         const form = document.getElementById('edit-comment-form');
         const deleteBtn = document.getElementById('delete-comment-btn');

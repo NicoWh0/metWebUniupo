@@ -82,7 +82,7 @@ class Comments {
                             Content: content,
                             Username: appState.auth.user.username,
                             UploadDate: new Date().toISOString(),
-                            UserId: appState.auth.user.Id,
+                            UserId: appState.auth.user.id,
                             editable: true,
                             liked: false,
                             Likes: 0
@@ -100,15 +100,15 @@ class Comments {
                         }
 
                         // Add the new comment to the beginning of the list
-                        commentsColumn.insertAdjacentHTML('beforeend', this.#renderComment(newComment));
+                        commentsColumn.insertAdjacentHTML('afterbegin', this.#renderComment(newComment));
 
                         //Add the new comment to the comments array
                         if(this.comments && this.comments.length > 0) this.comments.push(newComment);
                         else this.comments = [newComment];
 
                         //Add event listeners for the new comment
-                        this.#addEditCommentEventListener(commentsColumn.lastElementChild.querySelector('.comment-edit-button'));
-                        this.#addLikeCommentEventListener(commentsColumn.lastElementChild.querySelector('.comment-like-button'));
+                        this.#addEditCommentEventListener(commentsColumn.firstElementChild.querySelector('.comment-edit-button'));
+                        this.#addLikeCommentEventListener(commentsColumn.firstElementChild.querySelector('.comment-like-button'));
 
                     } catch (error) {
                         console.error('Error adding comment:', error);
@@ -228,7 +228,7 @@ class Comments {
                 
                 //show success message
                 const successDiv = document.createElement('div');
-                successDiv.className = 'alert alert-warning mt-2';
+                successDiv.className = 'alert alert-warning mt-2 w-75';
                 successDiv.textContent = 'Commento eliminato con successo.';
                 document.getElementById('comments-title-container').insertAdjacentElement('afterend', successDiv);
                 setTimeout(() => {

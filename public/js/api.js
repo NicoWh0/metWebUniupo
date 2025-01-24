@@ -178,6 +178,14 @@ class API {
                 body: data
             });
 
+            const translateFieldToItalian = (field) => {
+                if(field === 'title') return 'Titolo';
+                if(field === 'description') return 'Descrizione';
+                if(field === 'categories') return 'Categorie';
+                if(field === 'tags') return 'Tag';
+                return field;
+            }
+
             if (!response.ok) {
                 if(response.status === 401) {
                     throw new Error('Utente non autenticato.', { cause: response.status });
@@ -186,7 +194,7 @@ class API {
                     const json = await response.json();
                     const errors = json.errors;
                     const message = 'I seguenti campi non sono validi: ' + errors.map(
-                        error => error.path
+                        error => translateFieldToItalian(error.path)
                     ).join(', ');
                     throw new Error(message, { cause: response.status });
                 }
@@ -209,6 +217,15 @@ class API {
                 headers: this.headers,
                 body: JSON.stringify(data)
             });
+
+            const translateFieldToItalian = (field) => {
+                if(field === 'title') return 'Titolo';
+                if(field === 'description') return 'Descrizione';
+                if(field === 'categories') return 'Categorie';
+                if(field === 'tags') return 'Tag';
+                return field;
+            }
+
             if(!response.ok) {
                 if(response.status === 401) {
                     throw new Error('Utente non autenticato.', { cause: response.status });
@@ -223,7 +240,7 @@ class API {
                     const json = await response.json();
                     const errors = json.errors;
                     const message = 'I seguenti campi non sono validi: ' + errors.map(
-                        error => error.path
+                        error => translateFieldToItalian(error.path)
                     ).join(', ');
                     throw new Error(message, { cause: response.status });
                 }

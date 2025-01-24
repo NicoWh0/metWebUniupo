@@ -27,7 +27,7 @@ class CommentDao {
 
     getCommentsByImageId(imageId) {
         return new Promise((resolve, reject) => {
-            const sql = "SELECT Comment.Id, Comment.Content, Comment.UploadDate, User.Username, User.Id AS UserId, Likes FROM Comment JOIN User ON Comment.UserId = User.Id JOIN (SELECT Comment.Id AS Id, COUNT(CommentId) AS Likes FROM Comment LEFT JOIN CommentLike ON Comment.Id = CommentLike.CommentId GROUP BY Comment.Id) cnt ON cnt.Id = Comment.Id WHERE Comment.ImageId = ?";
+            const sql = "SELECT Comment.Id, Comment.Content, Comment.UploadDate, User.Username, User.Id AS UserId, Likes FROM Comment JOIN User ON Comment.UserId = User.Id JOIN (SELECT Comment.Id AS Id, COUNT(CommentId) AS Likes FROM Comment LEFT JOIN CommentLike ON Comment.Id = CommentLike.CommentId GROUP BY Comment.Id) cnt ON cnt.Id = Comment.Id WHERE Comment.ImageId = ? ORDER BY Comment.UploadDate DESC";
             db.all(sql, [imageId], function(err, rows) {
                 if(err) reject(err);
                 else resolve(rows);

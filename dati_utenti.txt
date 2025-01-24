@@ -1,7 +1,11 @@
-Utente		Password	Email							Tipo
+Utente		Password		Tipo
 
-NicoWho		Password1!	nico.bianchetto@gmail.com				Admin
-Celeste_	GroundArt!2	celestehuffman@gmail.com				Admin
-crow32		CrowCrow!32	crow32@hotmail.com					Normale
-Marco_C		Upo@Upo23	marcoc@upo.it						Normale
-Sara98		Password1!	sara98@gmail.com					Normale
+NicoWho		Password1!		Admin
+Celeste_	Password1!		Admin
+crow32		Password1!		Normale
+Marco_C		Password1!		Normale
+Sara98		Password1!		Normale
+Luigi		Password1!		Normale
+francesca97	Password1!		Normale
+
+La password è, per comodità, Password1! per tutti gli utenti (di default)

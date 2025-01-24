@@ -219,10 +219,10 @@ class EditImageModal {
     handleTagInput(e, tagsContainer) {
         if (e.key === 'Enter') {
             e.preventDefault();
-            const tag = e.target.value.trim();
+            const tag = e.target.value.trim().toLowerCase();
             if(tag.match(/^[a-zA-Z0-9_]{3,16}$/)) {
                 if (tag && this.tags.length < 16 && !this.tags.includes(tag)) {
-                    this.addTag(tag.toLowerCase(), tagsContainer);
+                    this.addTag(tag, tagsContainer);
                     e.target.value = '';
                 }
             }

@@ -1,13 +1,22 @@
 "use strict";
 
+//import river from '../../../img/user_background/river.jpg';
+
 class UserHeader {
     constructor(user) {
         this.user = user;
+        this.backgrounds = [
+            '../../../img/user_background/river.jpg',
+            '../../../img/user_background/beach.jpg',
+            '../../../img/user_background/park.jpg',
+            '../../../img/user_background/space.jpg',
+        ];
     }
 
     render() {
+        const randomBackground = this.backgrounds[Math.floor(Math.random() * this.backgrounds.length)];
         return `
-            <div id="user-header" class="d-flex flex-column-reverse w-100 align-items-center">
+            <div id="user-header" class="d-flex flex-column-reverse w-100 align-items-center" style="background-image: linear-gradient(to bottom, #ffffff00, #000000a2), url(${randomBackground});">
                 <div id="user-info" class="card p-1 flex-column justify-content-center">
                     <div class="card-img">
                         <svg id="user-info-img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
@@ -18,7 +27,7 @@ class UserHeader {
                     <div class="card-body">
                         <div id="user-name" class="card-header">${this.user.username}</div>
                         <div id="user-mail" class="card-footer">${this.user.email}</div>
-                        <div id="user-signed-up" class="card-footer">Utente dal ${new Date(this.user.signedUp).toLocaleDateString()}</div>
+                        <div id="user-signed-up" class="card-footer">Utente dal ${new Date(this.user.signedUp).toLocaleDateString("it-IT")}</div>
                     </div>
                 </div>
             </div>

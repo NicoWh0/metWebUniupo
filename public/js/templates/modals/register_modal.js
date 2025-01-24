@@ -162,8 +162,8 @@ class RegisterModal {
                     window.location.reload();
                 } catch(error) {
                     if(error.cause === 409) {
-                        username.setCustomValidity('Username già in uso da un altro account.');
-                        email.setCustomValidity('Email già in uso da un altro account.');
+                        username.value = '';
+                        email.value = '';
                     }
                     const errorDiv = document.createElement('div');
                     errorDiv.className = 'alert alert-danger mt-3';

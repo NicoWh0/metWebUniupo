@@ -31,6 +31,8 @@ class Related {
                 }
             }
             images = images.filter(img => img.AuthorId !== this.imageData.AuthorId);
+            //remove duplicates
+            images = images.filter((img, index, self) => index === self.findIndex(t => t.Id === img.Id));
 
             // (Related images) If we need more images, try tags
             if (this.imageData.tags && this.imageData.tags.length > 0) {
@@ -44,6 +46,8 @@ class Related {
                 }
             }
             images = images.filter(img => img.AuthorId !== this.imageData.AuthorId);
+            //remove duplicates
+            images = images.filter((img, index, self) => index === self.findIndex(t => t.Id === img.Id));
 
             // (Related images) If we still need more images, get random ones
             if (images.length < neededImages) {
@@ -54,11 +58,15 @@ class Related {
                 ));
             }
             images = images.filter(img => img.AuthorId !== this.imageData.AuthorId);
+            //remove duplicates
+            images = images.filter((img, index, self) => index === self.findIndex(t => t.Id === img.Id));
 
-            // One last shuffle
-            images = images.sort(() => Math.random() - 0.5);
             // Take only the first 9
             this.relatedImages = images.slice(0, 9);
+
+            // One last shuffle
+            this.relatedImages = this.relatedImages.sort(() => Math.random() - 0.5);
+
 
         } catch (error) {
             console.error('Error fetching related images:', error);

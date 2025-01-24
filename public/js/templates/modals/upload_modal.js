@@ -142,10 +142,10 @@ class UploadModal {
         if (e.key === 'Enter') {
             e.preventDefault();
 
-            const tag = e.target.value.trim();
+            const tag = e.target.value.trim().toLowerCase();
             if(tag.match(/^[a-zA-Z0-9_]{3,16}$/)) {
                 if (tag && this.tags.length < 16 && !this.tags.includes(tag)) {
-                    this.addTag(tag.toLowerCase(), tagsContainer);
+                    this.addTag(tag, tagsContainer);
                     e.target.value = '';
                 }
             }
@@ -299,7 +299,7 @@ class UploadModal {
             console.log('Upload successful:');
             
             // Show success message
-            this.showSuccessMessage('Upload successful!');
+            this.showSuccessMessage('Immagine caricata con successo!');
 
             // Clear the form fields
             this.clearForm();
@@ -313,7 +313,7 @@ class UploadModal {
             console.error('Upload failed:', error);
             
             // Create and append the error message
-            this.showErrorMessage(error.message || 'Upload failed. Please try again.');
+            this.showErrorMessage(error.message || 'Caricamento fallito. Riprova più tardi.');
         }
     }
 

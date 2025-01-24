@@ -2,6 +2,7 @@
 
 import UserHeader from '../templates/user/user_header.js';
 import UserImages from '../templates/user/user_images.js';
+import LoadingScreen from '../templates/others/loading_screen.js';
 import API from '../api.js';
 
 class UserPage {
@@ -12,6 +13,7 @@ class UserPage {
     }
 
     async mount(id) {
+        LoadingScreen.show();
         this.userId = id;
         try {
             await this.#loadUser();
@@ -32,12 +34,14 @@ class UserPage {
                     </div>
                 `;
             }
+        } finally {
+            LoadingScreen.hide();
         }
     }
 
     async #render() {
         const userHeader = new UserHeader(this.user);
-        const userImages = new UserImages(this.images);
+        const userImages = new UserImages(this.images, this.user);
 
         const content = document.getElementById('content');
         content.innerHTML = `
