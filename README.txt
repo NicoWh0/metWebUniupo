@@ -14,3 +14,5 @@ Il server è raggiungibile all'indirizzo http://localhost:3000/
 
 Per via del limite dei 20 MB della consegna, si prega di scaricare i file relativi alle immagini caricate dagli utenti al link google drive:
 https://drive.google.com/drive/folders/1hwdxMnYAHB61IjHrqGyhidJobmYFRK2D?usp=sharing
+
+Copiare la cartella presente nel link dentro quella del progetto (nel path dove si trova server, DAOs e cartella public)
