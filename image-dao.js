@@ -8,8 +8,6 @@ class ImageDao {
     #generatePlaceHolder(array, id = undefined) {
         let placeHolders = [];
         array.forEach(() => placeHolders.push(`(${id ? id +',':''} ?)`));
-        console.log('Placeholders creati: ');
-        console.log(placeHolders);
         return placeHolders.join(',');
     }
 
@@ -26,7 +24,6 @@ class ImageDao {
                             iconPath: row.IconImage
                         }
                     });
-                    console.log("Categories: ", categories);
                     resolve(categories);
                 }
             })
@@ -57,27 +54,22 @@ class ImageDao {
     uploadImage(data) {
         return new Promise((resolve, reject) => {    //data = {title, description, path, author, categories, tags, extention}
             db.serialize(() => {
-                console.log('Inizio transazione immagine...');
                 db.run(
                     "INSERT INTO Image(Title, Description, UploadDate, ImagePath, Author) VALUES(?, ?, DATETIME('now', 'localtime'), ?, ?)", [data.title, data.description, data.path, data.author], 
                     function(err) { if(err) reject(err) }
                 );
-                console.log('Immagine inserita.');
                 db.run(
                     'UPDATE Image SET ImagePath = (SELECT ImagePath || Id || ? FROM Image WHERE Id = (SELECT * FROM last_image_id)) WHERE Id = (SELECT * FROM last_image_id)', data.extention,
                     function(err) { if(err) reject(err) }
                 );
-                console.log('Path aggiornato.');
                 db.run(
                     'INSERT INTO ImageCategory(ImageId, CategoryId) VALUES' + this.#generatePlaceHolder(data.categories, '(SELECT * FROM last_image_id)'), data.categories,
                     function(err) { if(err) reject(err) }
                 );
-                console.log('Categorie inserite.');
                 if(data.tags && data.tags.length > 0) db.run(
                     'INSERT INTO ImageTag(ImageId, TagName) VALUES' + this.#generatePlaceHolder(data.tags, '(SELECT * FROM last_image_id)'), data.tags,
                     function(err) { if(err) reject(err) }
                 );
-                console.log('Tag inseriti, se presenti.');
                 db.get(
                     'SELECT * FROM last_image_id', function(err, row) {
                         if(err) reject(err);
@@ -163,8 +155,6 @@ class ImageDao {
     }
 
     editImage(imageId, data) {
-        console.log("Editing image: ", imageId);
-        console.log(data);
         return new Promise((resolve, reject) => {
             db.serialize(() => {
                 db.run(
@@ -241,8 +231,6 @@ class ImageDao {
             
             if(options.limit) sql += ` LIMIT ${options.limit}`;
             else sql += ` LIMIT 100`;
-
-            console.log(sql);
 
             db.all(sql, input, function(err, rows) {
                 if(err) reject(err);
