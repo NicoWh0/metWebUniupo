@@ -7,5 +7,7 @@ Marco_C		Password1!		Normale
 Sara98		Password1!		Normale
 Luigi		Password1!		Normale
 francesca97	Password1!		Normale
+pietro		Password1!		Normale
+giova		Password1!		Normale
 
-La password è, per comodità, Password1! per tutti gli utenti (di default)
+La password è, per comodità, Password1! per tutti gli utenti (di default). Si può comunque cambiare dall'applicazione.
