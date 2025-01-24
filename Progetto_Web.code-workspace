@@ -1,25 +1,7 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "../Esempio server-side rendering"
-		},
-		{
-			"path": "../Client side routing examples/Correct example - CS routing"
-		},
-		{
-			"path": "../Esempi progetti/YourHealth_20034882/YourHealthProject"
-		},
-		{
-			"path": "../L05-Fetch-Soluzione"
-		},
-		{
-			"path": "../Progetto_FrontEnd"
-		}
-	],
-	"settings": {
-		"liveServer.settings.multiRootWorkspaceName": "Progetto_FrontEnd"
-	}
+    "folders": [
+        {
+            "path": "."
+        }
+    ]
 }
