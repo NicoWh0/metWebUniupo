@@ -23,3 +23,6 @@ https://drive.google.com/drive/folders/1hwdxMnYAHB61IjHrqGyhidJobmYFRK2D?usp=sha
 
 Copiare la cartella presente nel link (eventualmente dopo averla decompressa) dentro quella del progetto (nel path dove si trova server, DAOs e cartella public).
 Questo permette di poter visualizzare le immagini già caricate all'interno dell'applicazione.
+
+Link al video di presentazione:
+https://youtu.be/skINhWiRdSU
