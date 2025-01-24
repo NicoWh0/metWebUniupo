@@ -64,7 +64,6 @@ class SearchPage {
 
     async handleFilterChange(event) {
         const { type, value } = event.detail;
-        console.log(type, value);
         if (type === 'sort') {
             this.searchParams.orderBy = value && value !== 'none' ? value : '';
         } else if (type === 'filter') {

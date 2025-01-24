@@ -139,7 +139,6 @@ class Comments {
     }
 
     #renderComment(comment) {
-        console.log("Rendering comment: ", comment);
         return `
             <div class="comment-wrapper d-flex flex-row" data-comment-id="${comment.Id}">
                 <div class="comment-user-image-wrapper d-flex align-items-start">
@@ -197,20 +196,11 @@ class Comments {
             const commentWrapper = editButton.closest('.comment-wrapper');
             const commentId = commentWrapper.dataset.commentId;
             const commentText = commentWrapper.querySelector('.card-text').textContent;
-
-            console.log({
-                commentWrapper: commentWrapper,
-                commentId: commentId,
-                commentText: commentText,
-                imageId: this.imageId
-            });
             
             // Get edit modal instance
             const editModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('editComment'));
             
             // Set callbacks
-            console.log(editModal._element.querySelector('.modal-content')); //This exists
-            console.log(editModal._element.querySelector('.modal-content').__component); //This is null
             editModal._element.querySelector('.modal-content').__component.onCommentUpdated = (_, newText) => {
                 commentWrapper.querySelector('.card-text').textContent = newText;
                 //show success message
@@ -242,7 +232,6 @@ class Comments {
             };
             
             // Set current comment data
-            console.log("Setting comment data: ", commentId, this.imageId, commentText);
             editModal._element.querySelector('.modal-content').__component.setCommentData(commentId, this.imageId, commentText);
 
             document.getElementById('deleteCommentConfirmModal').setAttribute('data-image-id', this.imageId);
@@ -263,10 +252,8 @@ class Comments {
             }
 
             const commentId = likeButton.dataset.commentId;
-            console.log("Adding like to comment: ", commentId);
             const likeCounter = document.querySelector(`.comment-like-counter[data-comment-id="${commentId}"]`);
             const comment = this.comments.find(c => c.Id.toString() === commentId);
-            console.log("Comment: ", comment);
             if (!comment) return;
 
             try {

@@ -158,7 +158,6 @@ class SearchHeader {
         const searchEvent = new CustomEvent('search', { 
             detail: { filterOption } 
         });
-        console.log(searchEvent);
         document.dispatchEvent(searchEvent);
     }
 

@@ -296,7 +296,6 @@ class UploadModal {
         try {
             // Send the data to the server
             const newId = await API.uploadImage(formData);
-            console.log('Upload successful:');
             
             // Show success message
             this.showSuccessMessage('Immagine caricata con successo!');

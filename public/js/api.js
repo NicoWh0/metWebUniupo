@@ -59,7 +59,6 @@ class API {
 
         try {
             const image = await fetch(fetchPath, {headers: this.headers});
-            console.log(image);
             return image;
         } catch(error) {
             console.error('Error fetching image file: ', error);
@@ -327,7 +326,6 @@ class API {
     }
 
     static async updateComment(imageId, commentId, content) {
-        console.log("imageId, commentId, content: ", imageId, commentId, content);
         try {
             const response = await fetch(`/images/${imageId}/comments/${commentId}`, {
                 method: 'PUT',
@@ -353,7 +351,6 @@ class API {
     }
 
     static async deleteComment(imageId, commentId) {
-        console.log("imageId, commentId: ", imageId, commentId);
         try {
             const response = await fetch(`/images/${imageId}/comments/${commentId}`, { method: 'DELETE', headers: this.headers });
             return response;

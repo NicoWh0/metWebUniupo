@@ -52,12 +52,10 @@ class UserPage {
 
     async #loadUser() {
         this.user = await API.getUser(this.userId);
-        console.log(this.user);
     }
 
     async #loadImages() {
         this.images = await API.searchImages(this.user.username, 'author');
-        console.log(this.images);
     }
 }
 

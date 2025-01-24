@@ -155,7 +155,6 @@ class RegisterModal {
                 // Here you can call your API to register the user
                 try {
                     await API.register(formData);
-                    console.log('Registration successful');
                     const modal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
                     modal.hide();
                     await API.login(formData.username, formData.password);

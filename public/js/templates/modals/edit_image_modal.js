@@ -400,12 +400,10 @@ class EditImageModal {
             categories: categories,
             tags: tags
         };
-        console.log(dataToSend);
 
         try {
             // Send the data to the server
             await API.editImage(this.id, dataToSend);
-            console.log('Edit successful');
             
             // Show success message
             this.showSuccessMessage('Modifica effettuata con successo!');
