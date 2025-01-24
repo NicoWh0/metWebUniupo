@@ -162,16 +162,6 @@ class ImageDao {
         });
     }
 
-    getLikes(imageId) {
-        return new Promise((resolve, reject) => {
-            const sql = 'SELECT COUNT(*) AS Likes FROM ImageLike WHERE ImageId = ?';
-            db.get(sql, [imageId], function(err, row) {
-                if(err) reject(err);
-                else resolve(row.Likes);
-            });
-        });
-    }
-
     editImage(imageId, data) {
         console.log("Editing image: ", imageId);
         console.log(data);
@@ -206,46 +196,6 @@ class ImageDao {
         return new Promise((resolve, reject) => {
             const sql = 'DELETE FROM Image WHERE Id = ?';
             db.run(sql, [imageId], function(err) {
-                if(err) reject(err);
-                else resolve();
-            });
-        });
-    }
-
-    addCategoryToImage(imageId, categoryId) {
-        return new Promise((resolve, reject) => {
-            const sql = 'INSERT INTO ImageCategory(ImageId, CategoryId) VALUES(?, ?)';
-            db.run(sql, [imageId, categoryId], function(err) {
-                if(err) reject(err);
-                else resolve();
-            });
-        });
-    }
-
-    removeCategoryFromImage(imageId, categoryId) {
-        return new Promise((resolve, reject) => {
-            const sql = 'DELETE FROM ImageCategory WHERE ImageId = ? AND CategoryId = ?';
-            db.run(sql, [imageId, categoryId], function(err) {
-                if(err) reject(err);
-                else resolve();
-            });
-        });
-    }
-
-    addTagToImage(imageId, tag) {
-        return new Promise((resolve, reject) => {
-            const sql = 'INSERT INTO ImageTag(ImageId, TagName) VALUES(?, ?)';
-            db.run(sql, [imageId, tag], function(err) {
-                if(err) reject(err);
-                else resolve();
-            });
-        });
-    }
-
-    removeTagFromImage(imageId, tag) {
-        return new Promise((resolve, reject) => {
-            const sql = 'DELETE FROM ImageTag WHERE ImageId = ? AND TagName = ?';
-            db.run(sql, [imageId, tag], function(err) {
                 if(err) reject(err);
                 else resolve();
             });

@@ -6,7 +6,6 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 
-
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
@@ -26,16 +25,14 @@ const tempStorePath = 'db_images/tmp/';
 const storePath = 'db_images/:id/';
 const imageStorePath = storePath + 'published/';
 
+//Multer
+
 const imageStorage = multer.diskStorage(
     {
-        destination: function(req, _file, cb) {
-            console.log('Impostando la destinazione');
-            console.log(req.body);
+        destination: function(_req, _file, cb) {
             cb(null, tempStorePath);
         },
         filename: function(req, file, cb) {
-            console.log('Impostando il nome');
-            console.log(req.body);
             req.body['originalfilename'] = file.originalname;
             cb(null, file.originalname);
         }
@@ -48,8 +45,6 @@ const storeImage = multer({
         field: 8 * 1024 * 1024 //8 MB
     },
     fileFilter: function(req, file, cb) {
-        console.log('Avvio filtro file (multer)');
-        console.log(req.body);
         const extention = path.extname(file.originalname);
         if(req.isAuthenticated() && (extention === '.jpg' || extention === '.jpeg' || extention === '.png'))
             cb(null, true);
@@ -70,6 +65,48 @@ app.use(express.static('public'));
 //Enum for the categories
 imageDao.getAllCategories().then(result => app.set('categories', result)).catch(err => {throw err});
 
+//Passport
+
+passport.use(new LocalStrategy(
+    function(username, password, done) {
+        userDao.loginUser(username, password).then(({user, pass}) => {
+            if(!user) done(null, false, {message: 'Username non trovato.'});
+            else if(!pass) done(null, false, {message: 'Password errata.'});
+            else done(null, user);
+        }).catch(err => done(err));
+    }
+));
+
+passport.serializeUser(function(user, done) {
+    done(null, user.id);
+});
+passport.deserializeUser(function(id, done) {
+    userDao.getUserInfoById(id).then(user => {
+        done(null, user);
+    }).catch(err => done(err));
+});
+
+
+app.use(session({
+    secret: 'The secret sentence of this session. Must not share with anyone.',
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+        sameSite: 'lax',
+        httpOnly: true,
+        secure: false,
+        maxAge: 3600000 // 1 hour
+    }
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+const isLogged = function(req, res, next) {
+    if(req.isAuthenticated()) next();
+    else res.status(401).json({error: 'Non autenticato.'});
+}
+//Il check se è admin è fatto già nelle routes
 
 
 //REST API
@@ -107,50 +144,6 @@ app.get('/categories', (req, res) => {
     return res.status(200).json({categories: req.app.get('categories')});
 });
 
-passport.use(new LocalStrategy(
-    function(username, password, done) {
-        userDao.loginUser(username, password).then(({user, pass}) => {
-            console.log(`user: ${user}, pass: ${pass}`);
-            if(!user) done(null, false, {message: 'Username non trovato.'});
-            else if(!pass) done(null, false, {message: 'Password errata.'});
-            else done(null, user);
-        }).catch(err => done(err));
-    }
-));
-
-passport.serializeUser(function(user, done) {
-    done(null, user.id);
-});
-passport.deserializeUser(function(id, done) {
-    userDao.getUserInfoById(id).then(user => {
-        console.log('Deserializzato');
-        console.log(user);
-        done(null, user);
-    }).catch(err => done(err));
-});
-
-
-app.use(session({
-    secret: 'The secret sentence of this session. Must not share with anyone.',
-    saveUninitialized: false,
-    resave: false,
-    cookie: {
-        sameSite: 'lax',
-        httpOnly: true,
-        secure: false,
-        maxAge: 3600000 // 1 hour
-    }
-}));
-app.use(passport.initialize());
-app.use(passport.session());
-
-
-const isLogged = function(req, res, next) {
-    if(req.isAuthenticated()) next();
-    else res.status(401).json({error: 'Non autenticato.'});
-}
-//Il check se è admin è fatto già nelle routes
-
 app.post('/register', 
     [
         check(['username', 'email', 'password', 'confirmPassword'], 'Parametri mancanti o dal formato errato.').isString(),
@@ -162,8 +155,6 @@ app.post('/register',
         })
     ],
     (req, res) => {
-        console.log(req.body);
-
         const errors = validationResult(req);
         if(!errors.isEmpty()) return res.status(422).json({errors: errors.array()});
         
@@ -180,9 +171,7 @@ app.post('/register',
 );
 
 
-app.post('/login', check(['username', 'password']).notEmpty(), function(req, res, next) {
-    console.log(req.body);
-    
+app.post('/login', check(['username', 'password']).notEmpty(), function(req, res, next) {   
     const errors = validationResult(req);
     if(!errors.isEmpty()) return res.status(422).json({errors: errors.array()});
 
@@ -194,8 +183,6 @@ app.post('/login', check(['username', 'password']).notEmpty(), function(req, res
         else {
             req.login(user, function(err) {
                 if(err) next(err);
-                console.log("req.user: ", req.user);
-                console.log("req.session.passport.user: ", req.session.passport.user);
                 res.json(req.user);
             });
         }
@@ -323,7 +310,6 @@ app.post('/images/upload', storeImage, isLogged,
         }),
     ], 
     (req, res) => {
-        console.log(req.body);
         if(!req.file) return res.status(422).json({message: 'Nessun file caricato.'});
         const errors = validationResult(req);
         if(!errors.isEmpty()) {
@@ -341,13 +327,10 @@ app.post('/images/upload', storeImage, isLogged,
             "extention" : path.extname(req.body.originalfilename)
         };
         
-        console.log('I dati sono: ');
-        console.log(data);
         imageDao.uploadImage(data).then(id => {
             fs.renameSync(tempStorePath + req.body.originalfilename, data.path + id + data.extention);
             return res.status(201).json({id});
         }).catch(err => {
-            console.log('Errore nel database: ' + err);
             fs.unlinkSync(tempStorePath + req.body.originalfilename);
             if(err.errno === 19 && err.code === 'SQLITE_CONSTRAINT' && err.message.match(/UNIQUE constraint failed/)) {
                 return res.status(409).json({message: 'Titolo già in uso.'});
@@ -377,7 +360,6 @@ app.put('/images/:id', isLogged,
         }),
     ],
     (req, res) => {
-        console.log(req.body);
         const errors = validationResult(req);
         if(!errors.isEmpty()) return res.status(422).json({errors: errors.array()});
 
@@ -402,7 +384,6 @@ app.put('/images/:id', isLogged,
 app.delete('/images/:id', isLogged, (req, res) => {
     imageDao.getImageById(req.params.id).then(image => {
         if(image.AuthorId !== req.user.id && req.user.type !== 1) return res.status(403).json({error: 'Forbidden'});
-        console.log("Deleting image: " + image.ImagePath);
         fs.unlinkSync(image.ImagePath);
         imageDao.deleteImageById(req.params.id).then(_done => {
             return res.status(200).end();
@@ -415,7 +396,6 @@ app.delete('/images/:id', isLogged, (req, res) => {
 });
 
 app.get('/images/search', (req, res) => {
-    console.log(req.query);
     let options = {};
     if(!req.query.value) {
         imageDao.getRandomImages().then(result => res.status(200).json(result)).catch(err => {
@@ -514,15 +494,8 @@ app.get('/images/:id/isliked', isLogged, (req, res) => {
     );
 });
 
-app.get('/images/:id/likes', (req, res) => {
-    imageDao.getLikesByImageId(req.params.id).then(result => res.status(200).json(result)).catch(err => 
-        res.status(500).json({errors: {'Param' : 'Server', 'message' : err}})
-    ); 
-});
-
 app.post('/images/:id/comments', isLogged, check('content', 'Il testo del commento deve essere lungo al massimo 128 caratteri.').isLength({max: 128, min: 1}), 
     (req, res) => {
-        console.log(req.body);
         const errors = validationResult(req);
         if(!errors.isEmpty()) return res.status(422).json({errors: errors.array()});
         commentDao.addComment(req.user.id, req.params.id, req.body.content).then(result => res.status(201).json({id: result})).catch(err => {

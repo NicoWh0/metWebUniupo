@@ -84,17 +84,6 @@ class CommentDao {
             });
         })
     }
-
-    getLikes(commentId) {
-        return new Promise((resolve, reject) => {
-            const sql = "SELECT COUNT(commentId) FROM CommentLike WHERE CommentId = ?";
-            db.all(sql, [commentId], function(err, rows) {
-                if(err) reject(err);
-                else resolve(rows);
-            });
-        })
-    }
-
 }
 
 module.exports = CommentDao;

@@ -2,7 +2,6 @@
 
 const db = require('./db');
 const bcrypt = require('bcrypt');
-const moment = require('moment');
 
 
 class UserDao {
@@ -43,24 +42,6 @@ class UserDao {
         })
     }
 
-    #checkIfNotExist(sql, param) {
-        return new Promise((resolve, reject) => {
-            db.run(sql, [param], function(err, row) {
-                if(err) reject(err);
-                else if(!row) resolve({success: true});
-                else resolve({success: false});
-            })
-        })
-    }
-
-    checkIfUsernameNotExist(username) {
-        return this.#checkIfNotExist('SELECT Id FROM User WHERE Username = ?', username);
-    }
-
-    checkIfEmailNotExist(email) {
-        return this.#checkIfNotExist('SELECT Id FROM User WHERE Email = ?', email);
-    }
-
     getUserInfoById(id) {
         return new Promise((resolve, reject) => {
             const sql = 'SELECT Username, Type, Email, DateTimeSignedUp AS SignedUp FROM User WHERE Id = ?';  
@@ -70,19 +51,6 @@ class UserDao {
                 else resolve({id: id, username: row.Username, type: row.Type, email: row.Email, signedUp: row.SignedUp});
             })
         });
-    }
-
-    setEmailVisibility(id, visibility) {
-        return new Promise((resolve, reject) => {
-            if(visibility === true) visibility = 1;
-            else if(visibility === false) visibility = 0;
-            else if(visibility != 0 || visibility != 1) reject('Invalid visibility value.');
-            const sql = 'UPDATE User SET ShowEmail = ? WHERE Id = ?';
-            db.run(sql, [visibility, id], function(err) {
-                if(err) reject(err);
-                else resolve();
-            })
-        })
     }
 
     changePassword(id, oldPassword, newPassword) {
@@ -108,57 +76,6 @@ class UserDao {
             })
         })
     }
-
-    changeUsername(id, newUsername) {
-        return new Promise((resolve, reject) => {
-            const sql = 'UPDATE User SET Username = ? WHERE Id = ?';
-            db.run(sql, [newUsername, id], function(err) {
-                if(err) reject(err);
-                else resolve();
-            })
-        })
-    }
-
-    changeUserType(id, type) {
-        return new Promise((resolve, reject) => {
-            const sql = 'UPDATE User SET Type = ? WHERE Id = ?';
-            db.run(sql, [type, id], function(err) {
-                if(err) reject(err);
-                else resolve();
-            })
-        })
-    }
-
-    changeUserCover(id, cover) {
-        return new Promise((resolve, reject) => {
-            const sql = 'UPDATE User SET UserCover = ? WHERE Id = ?';
-            db.run(sql, [cover, id], function(err) {
-                if(err) reject(err);
-                else resolve();
-            })
-        })
-    }
-
-    changeUserDescription(id, description) {
-        return new Promise((resolve, reject) => {
-            const sql = 'UPDATE User SET Description = ? WHERE Id = ?';
-            db.run(sql, [description, id], function(err) {
-                if(err) reject(err);
-                else resolve();
-            })
-        })
-    }
-
-    deleteUser(id) {
-        return new Promise((resolve, reject) => {
-            const sql = 'DELETE FROM User WHERE Id = ?';
-            db.run(sql, [id], function(err) {
-                if(err) reject(err);
-                else resolve(id);
-            })
-        })
-    }
-
 }
 
 module.exports = UserDao;
