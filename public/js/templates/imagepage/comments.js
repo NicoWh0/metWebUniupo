@@ -24,11 +24,12 @@ class Comments {
                         <textarea id="comment-form" 
                             class="form-control" 
                             aria-describedby="commentBlock" 
-                            placeholder="Inserisci un commento (max 128 caratteri)" 
+                            placeholder="Inserisci un commento (max 128 caratteri) e premi INVIO per confermare" 
                             maxlength="128" 
                             minlength="1"
                             ${!appState.auth.isLoggedIn ? 'readonly' : ''}></textarea>  
                     </div>
+                    <button id="comment-form-submit" class="btn btn-primary sign-in-up-btn" disabled>Invia</button>
                 </div>
                 <div class="d-flex flex-column">
                     <div id="comments-column" class="d-flex flex-column">
@@ -46,7 +47,7 @@ class Comments {
 
     attachEventListeners() {
         const commentForm = document.getElementById('comment-form');
-        
+        const commentSubmitButton = document.getElementById('comment-form-submit');
         if (commentForm) {
             // Handle focus event
             commentForm.addEventListener('click', () => {
@@ -65,66 +66,81 @@ class Comments {
                 }
             });
 
+            commentForm.addEventListener('input', () => {
+                commentSubmitButton.disabled = commentForm.value.trim().length === 0;
+            });
+
+            const commentSubmit = async (e) => {
+                e.preventDefault();
+                const content = commentForm.value.trim();
+                if (content.length === 0) return;
+
+                try {
+                    // Send comment to server
+                    const newCommentId = await API.addComment(this.imageId, content);
+
+                    const newComment = {
+                        Id: newCommentId,
+                        Content: content,
+                        Username: appState.auth.user.username,
+                        UploadDate: new Date().toISOString(),
+                        UserId: appState.auth.user.id,
+                        editable: true,
+                        liked: false,
+                        Likes: 0
+                    }
+                    
+                    // Clear textarea
+                    commentForm.value = '';
+
+                    // Add new comment to UI
+                    const commentsColumn = document.getElementById('comments-column');
+
+                    // If there were no comments, delete the "no comments" message
+                    if (document.getElementById('no-comments-message')) {
+                        document.getElementById('no-comments-message').remove();
+                    }
+
+                    // Add the new comment to the beginning of the list
+                    commentsColumn.insertAdjacentHTML('afterbegin', this.#renderComment(newComment));
+
+                    //Add the new comment to the comments array
+                    if(this.comments && this.comments.length > 0) this.comments.push(newComment);
+                    else this.comments = [newComment];
+
+                    //Add event listeners for the new comment
+                    this.#addEditCommentEventListener(commentsColumn.firstElementChild.querySelector('.comment-edit-button'));
+                    this.#addLikeCommentEventListener(commentsColumn.firstElementChild.querySelector('.comment-like-button'));
+
+                    //Disable submit button after comment is added
+                    commentSubmitButton.disabled = true;
+
+                } catch (error) {
+                    console.error('Error adding comment:', error);
+                    // Show error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'alert alert-danger mt-2';
+                    errorDiv.textContent = error.message || 'Errore durante l\'invio del commento. Riprova.';
+                    commentForm.parentNode.insertAdjacentElement('afterend', errorDiv);
+
+                    // Remove error message after 3 seconds
+                    setTimeout(() => {
+                        errorDiv.remove();
+                    }, 3000);
+                }
+            }
+
             // Handle keyup event for logged-in users
             commentForm.addEventListener('keyup', async (e) => {
                 if (e.key === 'Enter' && !e.shiftKey && appState.auth.isLoggedIn) {
-                    e.preventDefault();
-                    
-                    const content = commentForm.value.trim();
-                    if (content.length === 0) return;
-
-                    try {
-                        // Send comment to server
-                        const newCommentId = await API.addComment(this.imageId, content);
-
-                        const newComment = {
-                            Id: newCommentId,
-                            Content: content,
-                            Username: appState.auth.user.username,
-                            UploadDate: new Date().toISOString(),
-                            UserId: appState.auth.user.id,
-                            editable: true,
-                            liked: false,
-                            Likes: 0
-                        }
-                        
-                        // Clear textarea
-                        commentForm.value = '';
-
-                        // Add new comment to UI
-                        const commentsColumn = document.getElementById('comments-column');
-
-                        // If there were no comments, delete the "no comments" message
-                        if (document.getElementById('no-comments-message')) {
-                            document.getElementById('no-comments-message').remove();
-                        }
-
-                        // Add the new comment to the beginning of the list
-                        commentsColumn.insertAdjacentHTML('afterbegin', this.#renderComment(newComment));
-
-                        //Add the new comment to the comments array
-                        if(this.comments && this.comments.length > 0) this.comments.push(newComment);
-                        else this.comments = [newComment];
-
-                        //Add event listeners for the new comment
-                        this.#addEditCommentEventListener(commentsColumn.firstElementChild.querySelector('.comment-edit-button'));
-                        this.#addLikeCommentEventListener(commentsColumn.firstElementChild.querySelector('.comment-like-button'));
-
-                    } catch (error) {
-                        console.error('Error adding comment:', error);
-                        // Show error message
-                        const errorDiv = document.createElement('div');
-                        errorDiv.className = 'alert alert-danger mt-2';
-                        errorDiv.textContent = error.message || 'Errore durante l\'invio del commento. Riprova.';
-                        commentForm.parentNode.insertAdjacentElement('afterend', errorDiv);
-
-                        // Remove error message after 3 seconds
-                        setTimeout(() => {
-                            errorDiv.remove();
-                        }, 3000);
-                    }
+                    await commentSubmit(e);
                 }
             });
+
+            commentSubmitButton.addEventListener('click', async (e) => {
+                await commentSubmit(e);
+            });
+            
         }
 
         // Add event listeners for edit buttons

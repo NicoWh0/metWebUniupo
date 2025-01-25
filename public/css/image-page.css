@@ -166,7 +166,7 @@
 #comment-form-group {
 	border-top: .1rem solid #464646;
 	padding-top: .5rem;
-	margin-bottom: 1.5rem;
+	margin-bottom: .7rem;
 }
 
 #comment-form {
@@ -288,6 +288,23 @@
 
 .card .card-title a:hover {
 	color: #e29911; 
+}
+
+#comment-form-submit {
+	width: min-content;
+	margin-left: 2.75rem;
+}
+
+#comment-form-submit:disabled {
+	background-color: #a8a8a8 !important;
+	border-color: #a8a8a8 !important;
+	color: #f0f0f0 !important;
+	cursor: not-allowed !important;
+	pointer-events: auto !important;
+}
+
+.alert.alert-warning.mt-2.w-75 {
+	margin-left: 3.45rem;
 }
 
 /* Related Images */
