@@ -57,6 +57,11 @@ class SearchPage {
         LoadingScreen.hide();
     }
 
+    async unmount() {
+        document.removeEventListener('search', this.handleSearch);
+        document.removeEventListener('filterChange', this.handleFilterChange);
+    }
+
     async handleSearch(event) {
         this.searchParams.searchTerm = event.detail.searchTerm;
         await this.#performSearch();
@@ -73,6 +78,7 @@ class SearchPage {
     }
 
     async #performSearch() {
+        console.log("perform search");
         try {
             // If searchTerm is empty, show placeholder message instead of making API call
             if (!this.searchParams.searchTerm) {

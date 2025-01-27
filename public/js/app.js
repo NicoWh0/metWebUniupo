@@ -52,8 +52,17 @@ page('/search', async (ctx) => {
         searchBy ?? 'all',
         sortValue ?? ''
     );
+    ctx.searchPage = searchPage;
 
     await searchPage.mount();
+});
+
+
+page.exit('/search', async (ctx, next) => {
+    // Unmount search page
+    ctx.searchPage.unmount();
+    ctx.searchPage = null;
+    next();
 });
 
 page('/image/:id', async (ctx) => {
